@@ -10,7 +10,7 @@ sub engine {
     my $class        = shift;
     my %args         = @_;
     my $type         = delete $args{type} or croak "type required";
-    my $engine_class = 'Search::OpenSearch::' . $type;
+    my $engine_class = 'Search::OpenSearch::Engine::' . $type;
     eval "use $engine_class";
     if ($@) {
         croak $@;
@@ -52,6 +52,15 @@ Search::OpenSearch - provide search results in OpenSearch format
  print $response;
 
 =head1 DESCRIPTION
+
+Search::OpenSearch is a framework for various backend engines
+to return results comforming to the OpenSearch API (http://opensearch.org/).
+
+=head1 METHODS
+
+=head2 engine( I<args> )
+
+Returns a new Search::OpenSearch::Engine instance.
 
 =head1 AUTHOR
 
