@@ -15,7 +15,7 @@ WriteMakefile(
         'Test::More' => 0,
         'JSON'       => 0,
         'Rose::ObjectX::CAF' => 0,
-
+        'Scalar::Util'       => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Search-OpenSearch-*' },

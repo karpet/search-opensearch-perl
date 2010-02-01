@@ -4,6 +4,7 @@ use warnings;
 use Carp;
 use base qw( Rose::ObjectX::CAF );
 use Scalar::Util qw( blessed );
+use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
 
