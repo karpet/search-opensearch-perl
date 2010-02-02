@@ -3,3 +3,6 @@ Revision history for Search-OpenSearch
 0.01    01 Feb 2010
         First version, released on an unsuspecting world.
 
+0.02    02 Feb 2010
+        * initial XML support, via XML::Atom.
+

@@ -1,22 +1,10 @@
-package Search::OpenSearch;
-
-use warnings;
+package Search::OpenSearch::Facets;
 use strict;
+use warnings;
 use Carp;
+use base qw( Rose::ObjectX::CAF );
 
-our $VERSION = '0.02';
-
-sub engine {
-    my $class        = shift;
-    my %args         = @_;
-    my $type         = delete $args{type} or croak "type required";
-    my $engine_class = 'Search::OpenSearch::Engine::' . $type;
-    eval "use $engine_class";
-    if ($@) {
-        croak $@;
-    }
-    return $engine_class->new(%args);
-}
+__PACKAGE__->mk_accessors(qw( names sample_size ));
 
 1;
 
@@ -24,7 +12,7 @@ __END__
 
 =head1 NAME
 
-Search::OpenSearch - provide search results in OpenSearch format
+Search::OpenSearch::Facets - represents Facet metadata
 
 =head1 SYNOPSIS
 
@@ -53,46 +41,23 @@ Search::OpenSearch - provide search results in OpenSearch format
 
 =head1 DESCRIPTION
 
-This module is a work-in-progress. The following features are not yet implemented:
-
-=over
-
-=item facets
-
-=item highlighting
-
-=back
-
 Search::OpenSearch is a framework for various backend engines
 to return results comforming to the OpenSearch API (http://opensearch.org/).
 
 =head1 METHODS
 
-=head2 engine( I<args> )
+This class is a subclass of Rose::ObjectX::CAF. Only new or overridden
+methods are documented here.
 
-Returns a new Search::OpenSearch::Engine instance.
+=head2 names
+
+=head2 sample_size
 
 =head1 AUTHOR
 
 Peter Karman, C<< <karman at cpan.org> >>
 
 =head1 BUGS
-
-=over
-
-=item *
-
-Currently no tests. Major bug.
-
-=item *
-
-OpenSearch is not fully implemented in any Response format, particularly JSON.
-
-=item * 
-
-Facet support documented but non-existent.
-
-=back
 
 Please report any bugs or feature requests to C<bug-search-opensearch at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Search-OpenSearch>.  I will be notified, and then you'll

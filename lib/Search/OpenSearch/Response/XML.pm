@@ -3,6 +3,108 @@ use strict;
 use warnings;
 use Carp;
 use base qw( Search::OpenSearch::Response );
+use Data::Dump qw( dump );
+use XML::Atom::Feed;
+use XML::Atom::Entry;
+use XML::Atom::Ext::OpenSearch;
+use URI::Encode qw( uri_encode );
+use POSIX qw( strftime );
+
+sub stringify {
+    my $self  = shift;
+    my $pager = $self->fetch_pager();
+
+    my @entries = $self->_build_entries;
+
+    my $now = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
+
+    my $feed = XML::Atom::Feed->new;
+    $feed->title( $self->title );
+    $feed->author( $self->author );
+    $feed->totalResults( $self->total );
+    $feed->startIndex( $self->offset );
+    $feed->itemsPerPage( $self->page_size );
+
+    my $query = XML::Atom::Ext::OpenSearch::Query->new;
+    $query->role('request');
+    $query->totalResults( $self->total );
+    $query->searchTerms( $self->query );
+    $query->startIndex( $self->offset );
+
+    # TODO language, et al
+    $feed->add_Query($query);
+
+    #$feed->id();# TODO generate uuid? cache per query?
+
+    # main link
+    my $link = XML::Atom::Link->new;
+    $link->href( $self->link );
+    $feed->add_link($link);
+
+    # pager links
+    my @pager_links;
+    my $query_encoded = uri_encode( $self->query );
+    my $this_uri
+        = $self->link . '?q=' . $query_encoded . '&p=' . $self->page_size;
+
+    my $self_link = XML::Atom::Link->new;
+    $self_link->rel('self');
+    $self_link->href( $this_uri . '&o=' . $self->offset );
+    push @pager_links, $self_link;
+
+    unless ( $pager->current_page == $pager->first_page ) {
+        my $prev_link = XML::Atom::Link->new;
+        $prev_link->rel('previous');
+        $prev_link->href(
+            $this_uri . '&o=' . ( $self->offset - $self->page_size ) );
+        push @pager_links, $prev_link;
+        my $first_link = XML::Atom::Link->new;
+        $first_link->rel('first');
+        $first_link->href( $this_uri . '&o=0' );
+        push @pager_links, $first_link;
+    }
+    unless ( $pager->current_page == $pager->last_page ) {
+        my $next_link = XML::Atom::Link->new;
+        $next_link->rel('next');
+        $next_link->href(
+            $this_uri . '&o=' . ( $self->offset + $self->page_size ) );
+        push @pager_links, $next_link;
+        my $last_page = XML::Atom::Link->new;
+        $last_page->rel('last');
+        $last_page->href( $this_uri . '&o='
+                . ( $self->page_size * ( $pager->last_page - 1 ) ) );
+        push @pager_links, $last_page;
+    }
+
+    # add to feed
+    for (@pager_links) {
+        $feed->add_link($_);
+    }
+
+    # results
+    for my $entry (@entries) {
+        $feed->add_entry($entry);
+    }
+
+    return $feed->as_xml;
+}
+
+sub _build_entries {
+    my $self    = shift;
+    my $results = $self->fetch_results();
+    my @entries;
+    for my $result (@$results) {
+        my $entry = XML::Atom::Entry->new;
+        $entry->title( $result->{title} );
+        $entry->content( $result->{summary} );
+        $entry->id( $result->{uri} );
+        my $link = XML::Atom::Link->new;
+        $link->href( $result->{uri} );
+        $entry->add_link($link);
+        push @entries, $entry,;
+    }
+    return @entries;
+}
 
 1;
 

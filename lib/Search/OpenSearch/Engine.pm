@@ -8,7 +8,10 @@ use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
 
-__PACKAGE__->mk_accessors(qw( index facets searcher fields ));
+__PACKAGE__->mk_accessors(qw( index facets fields link ));
+
+use Rose::Object::MakeMethods::Generic (
+    'scalar --get_set_init' => 'searcher', );
 
 sub init {
     my $self = shift;
@@ -17,7 +20,6 @@ sub init {
         $self->facets(
             Search::OpenSearch::Facets->new( %{ $self->facets } ) );
     }
-    $self->searcher( $self->init_searcher() );
     return $self;
 }
 sub init_searcher { croak "$_[0] does not implement init_searcher()" }
@@ -74,6 +76,7 @@ sub search {
         page_size => $page_size,
         total     => $results->hits,
         query     => $query,
+        link      => $self->link,
         );
     return $response;
 }
@@ -114,6 +117,7 @@ Search::OpenSearch::Engine - abstract base class
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
     format      => 'XML',               # or JSON
+    link        => 'http://yourdomain.foo/opensearch/',
  );
  print $response;
 
@@ -129,7 +133,7 @@ methods are documented here.
 
 =head2 init
 
-Sets up the new object, primarily calling init_searcher().
+Sets up the new object.
 
 =head2 init_searcher
 
@@ -170,6 +174,10 @@ Get/set the arrayref of field names to be fetched for each search result.
 
 Should return a unique identifier for your Engine subclass.
 Default is to croak().
+
+=head2 link
+
+The base URI for Responses. Passed to Response->link.
 
 =head1 AUTHOR
 

@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base qw( Rose::ObjectX::CAF );
 use Carp;
+use Data::Pageset;
 use overload
     '""'     => sub { $_[0]->stringify; },
     'bool'   => sub {1},
@@ -18,9 +19,22 @@ __PACKAGE__->mk_accessors(
         fields
         facets
         query
-
+        title
+        link
+        author
+        pps
         )
 );
+
+sub init {
+    my $self = shift;
+    $self->SUPER::init(@_);
+    $self->{title}  ||= 'OpenSearch Results';
+    $self->{author} ||= ref($self);
+    $self->{link}   ||= '';
+    $self->{pps}    ||= 10;
+    return $self;
+}
 
 sub stringify { croak "$_[0] does not implement stringify()" }
 
@@ -29,6 +43,8 @@ sub fetch_results {
     my $fields  = shift || [];
     my $results = $self->results or croak "no results defined";
     my @results;
+    my $count     = 0;
+    my $page_size = $self->page_size;
     while ( my $result = $results->next ) {
         my %res = (
             score   => $result->score,
@@ -41,6 +57,7 @@ sub fetch_results {
             $res{$field} = $result->get_property($field);
         }
         push @results, \%res;
+        last if ++$count > $page_size;
     }
     return \@results;
 }
@@ -50,6 +67,22 @@ sub fetch_facets {
     my $facet_names = shift or croak "facet_names required";
     croak "TODO";
 
+}
+
+sub fetch_pager {
+    my $self      = shift;
+    my $offset    = $self->offset;
+    my $page_size = $self->page_size;
+    my $this_page = ( $offset / $page_size ) + 1;
+    my $pager     = Data::Pageset->new(
+        {   total_entries    => $self->total,
+            entries_per_page => $page_size,
+            current_page     => $this_page,
+            pages_per_set    => $self->pps,
+            mode             => 'slide',
+        }
+    );
+    return $pager;
 }
 
 1;
@@ -95,6 +128,10 @@ common methods for all Response subclasses.
 This class is a subclass of Rose::ObjectX::CAF. Only new or overridden
 methods are documented here.
 
+=head2 init
+
+Sets some defaults for a new Response.
+
 The following standard get/set attribute methods are available:
 
 =over
@@ -117,6 +154,16 @@ An interator object behaving like SWISH::Prog::Results.
 
 =item query
 
+=item author
+
+=item pps
+
+Pages-per-section. Used by Data::Pageset. Default is "10".
+
+=item title
+
+=item link
+
 =back
 
 =head2 fetch_results
@@ -126,6 +173,10 @@ Returns arrayref of hashrefs representing the results().
 =head2 fetch_facets
 
 Returns arrayref of hashrefs representing the facets of results().
+
+=head2 fetch_pager
+
+Returns Data::Pageset object based on offset() and page_size().
 
 =head2 stringify
 
