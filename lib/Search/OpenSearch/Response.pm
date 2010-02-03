@@ -4,6 +4,8 @@ use warnings;
 use base qw( Rose::ObjectX::CAF );
 use Carp;
 use Data::Pageset;
+use Search::Tools::XML;
+use Search::Tools;
 use overload
     '""'     => sub { $_[0]->stringify; },
     'bool'   => sub {1},
@@ -40,21 +42,40 @@ sub stringify { croak "$_[0] does not implement stringify()" }
 
 sub fetch_results {
     my $self    = shift;
-    my $fields  = shift || [];
+    my $fields  = shift || $self->fields || [];
     my $results = $self->results or croak "no results defined";
     my @results;
     my $count     = 0;
     my $page_size = $self->page_size;
+
+    # TODO how to pass in a stemmer if necessary to the ST->parser?
+    my $XMLer = Search::Tools::XML->new;
+    my $query = Search::Tools->parser()->parse( $self->query );
+    my $snipper
+        = Search::Tools->snipper( query => $query, as_sentences => 1 );
+    my $hiliter = Search::Tools->hiliter( query => $query );
     while ( my $result = $results->next ) {
+        my $title   = $XMLer->escape( $result->title   || '' );
+        my $summary = $XMLer->escape( $result->summary || '' );
+
+        # \003 is the record-delimiter in Swish3
+        # the default behaviour is just to ignore it
+        # and replace with a single space, but a subclass (like JSON)
+        # might want to split on it to get an array of values
+        $title   =~ s/\003/ /g;
+        $summary =~ s/\003/ /g;
+
         my %res = (
             score   => $result->score,
             uri     => $result->uri,
             mtime   => $result->mtime,
-            title   => $result->title,
-            summary => $result->summary,
+            title   => $hiliter->light($title),
+            summary => $hiliter->light( $snipper->snip($summary) ),
         );
         for my $field (@$fields) {
-            $res{$field} = $result->get_property($field);
+            my $str = $XMLer->escape( $result->get_property($field) || '' );
+            $str =~ s/\003/ /g;
+            $res{$field} = $hiliter->light($str);
         }
         push @results, \%res;
         last if ++$count > $page_size;

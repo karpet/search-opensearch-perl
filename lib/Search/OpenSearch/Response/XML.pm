@@ -4,11 +4,16 @@ use warnings;
 use Carp;
 use base qw( Search::OpenSearch::Response );
 use Data::Dump qw( dump );
-use XML::Atom::Feed;
-use XML::Atom::Entry;
-use XML::Atom::Ext::OpenSearch;
+use Search::Tools::XML;
 use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
+my $XMLer = Search::Tools::XML->new;
+
+my $header = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" 
+       xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+EOF
 
 sub stringify {
     my $self  = shift;
@@ -18,75 +23,101 @@ sub stringify {
 
     my $now = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
 
-    my $feed = XML::Atom::Feed->new;
-    $feed->title( $self->title );
-    $feed->author( $self->author );
-    $feed->totalResults( $self->total );
-    $feed->startIndex( $self->offset );
-    $feed->itemsPerPage( $self->page_size );
-
-    my $query = XML::Atom::Ext::OpenSearch::Query->new;
-    $query->role('request');
-    $query->totalResults( $self->total );
-    $query->searchTerms( $self->query );
-    $query->startIndex( $self->offset );
+    my $feed = $XMLer->perl_to_xml(
+        {   title                     => $self->title,
+            author                    => $self->author,
+            updated                   => $now,
+            'opensearch:totalResults' => $self->total,
+            'opensearch:startIndex'   => $self->offset,
+            'opensearch:itemsPerPage' => $self->page_size,
+        },
+        'feed',
+    );
+    $feed =~ s,</?feed>,,g;    # strip wrapper tags for now
 
     # TODO language, et al
-    $feed->add_Query($query);
+    $feed .= $XMLer->singleton(
+        'opensearch:Query',
+        {   role         => 'request',
+            totalResults => $self->total,
+            searchTerms  => $self->query,
+            startIndex   => $self->offset,
+        }
+    );
 
-    #$feed->id();# TODO generate uuid? cache per query?
+    # TODO generate uuid? cache per query?
 
     # main link
-    my $link = XML::Atom::Link->new;
-    $link->href( $self->link );
-    $feed->add_link($link);
+    my $link = $XMLer->singleton( 'link', { href => $self->link } );
 
     # pager links
     my @pager_links;
     my $query_encoded = uri_encode( $self->query );
     my $this_uri
-        = $self->link . '?q=' . $query_encoded . '&p=' . $self->page_size;
+        = $self->link
+        . '?format=XML&q='
+        . $query_encoded . '&p='
+        . $self->page_size;
 
-    my $self_link = XML::Atom::Link->new;
-    $self_link->rel('self');
-    $self_link->href( $this_uri . '&o=' . $self->offset );
+    my $self_link = $XMLer->singleton(
+        'link',
+        {   rel  => 'self',
+            href => $this_uri . '&o=' . $self->offset
+        }
+    );
     push @pager_links, $self_link;
 
     unless ( $pager->current_page == $pager->first_page ) {
-        my $prev_link = XML::Atom::Link->new;
-        $prev_link->rel('previous');
-        $prev_link->href(
-            $this_uri . '&o=' . ( $self->offset - $self->page_size ) );
+        my $prev_link = $XMLer->singleton(
+            'link',
+            {   rel  => 'previous',
+                href => $this_uri . '&o='
+                    . ( $self->offset - $self->page_size )
+            }
+        );
         push @pager_links, $prev_link;
-        my $first_link = XML::Atom::Link->new;
-        $first_link->rel('first');
-        $first_link->href( $this_uri . '&o=0' );
+        my $first_link = $XMLer->singleton(
+            'link',
+            {   rel  => 'first',
+                href => $this_uri . '&o=0',
+            }
+        );
         push @pager_links, $first_link;
     }
     unless ( $pager->current_page == $pager->last_page ) {
-        my $next_link = XML::Atom::Link->new;
-        $next_link->rel('next');
-        $next_link->href(
-            $this_uri . '&o=' . ( $self->offset + $self->page_size ) );
+        my $next_link = $XMLer->singleton(
+            'link',
+            {   rel  => 'next',
+                href => $this_uri . '&o='
+                    . ( $self->offset + $self->page_size )
+            }
+        );
         push @pager_links, $next_link;
-        my $last_page = XML::Atom::Link->new;
-        $last_page->rel('last');
-        $last_page->href( $this_uri . '&o='
-                . ( $self->page_size * ( $pager->last_page - 1 ) ) );
+        my $last_page = $XMLer->singleton(
+            'link',
+            {   rel  => 'last',
+                href => $this_uri . '&o='
+                    . ( $self->page_size * ( $pager->last_page - 1 ) )
+            }
+        );
         push @pager_links, $last_page;
     }
 
     # add to feed
     for (@pager_links) {
-        $feed->add_link($_);
+        $feed .= $_;
     }
 
     # results
     for my $entry (@entries) {
-        $feed->add_entry($entry);
+        $feed .= $entry;
     }
 
-    return $feed->as_xml;
+    # add the tags back
+    $feed = $header . $feed . "</feed>";
+
+    return $XMLer->tidy($feed);
+
 }
 
 sub _build_entries {
@@ -94,13 +125,15 @@ sub _build_entries {
     my $results = $self->fetch_results();
     my @entries;
     for my $result (@$results) {
-        my $entry = XML::Atom::Entry->new;
-        $entry->title( $result->{title} );
-        $entry->content( $result->{summary} );
-        $entry->id( $result->{uri} );
-        my $link = XML::Atom::Link->new;
-        $link->href( $result->{uri} );
-        $entry->add_link($link);
+        my $entry = $XMLer->perl_to_xml(
+            {   title   => $result->{title},
+                content => $result->{summary},
+                id      => $result->{uri},
+            },
+            'entry', 0, 1
+        );
+        my $link = $XMLer->singleton( 'link', { href => $result->{uri} } );
+        $entry =~ s,</entry>,$link</entry>,;
         push @entries, $entry,;
     }
     return @entries;

@@ -6,3 +6,8 @@ Revision history for Search-OpenSearch
 0.02    02 Feb 2010
         * initial XML support, via XML::Atom.
 
+0.03    03 Feb 2010
+        * drop XML::Atom in favor of hand-rolled XML with Search::Tools::XML.
+          This is primarily to avoid double-escaping the highlighting.
+        * add snippet and highlighting support via Search::Tools.
+
