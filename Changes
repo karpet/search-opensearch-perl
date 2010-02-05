@@ -11,3 +11,6 @@ Revision history for Search-OpenSearch
           This is primarily to avoid double-escaping the highlighting.
         * add snippet and highlighting support via Search::Tools.
 
+0.04    xxx
+        * fix off-by-one error in fetch_results()
+

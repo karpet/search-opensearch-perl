@@ -78,7 +78,7 @@ sub fetch_results {
             $res{$field} = $hiliter->light($str);
         }
         push @results, \%res;
-        last if ++$count > $page_size;
+        last if ++$count >= $page_size;
     }
     return \@results;
 }
