@@ -28,6 +28,8 @@ __PACKAGE__->mk_accessors(
         )
 );
 
+our $VERSION = '0.04';
+
 sub init {
     my $self = shift;
     $self->SUPER::init(@_);

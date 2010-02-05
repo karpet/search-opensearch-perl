@@ -10,6 +10,8 @@ use Search::OpenSearch::Response::JSON;
 
 __PACKAGE__->mk_accessors(qw( index facets fields link ));
 
+our $VERSION = '0.04';
+
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
 

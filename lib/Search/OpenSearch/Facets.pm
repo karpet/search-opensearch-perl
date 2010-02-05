@@ -6,6 +6,8 @@ use base qw( Rose::ObjectX::CAF );
 
 __PACKAGE__->mk_accessors(qw( names sample_size ));
 
+our $VERSION = '0.04';
+
 1;
 
 __END__

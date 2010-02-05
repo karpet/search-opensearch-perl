@@ -5,6 +5,8 @@ use Carp;
 use base qw( Search::OpenSearch::Response );
 use JSON;
 
+our $VERSION = '0.04';
+
 sub stringify {
     my $self    = shift;
     my $results = $self->fetch_results();

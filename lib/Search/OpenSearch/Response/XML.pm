@@ -7,6 +7,9 @@ use Data::Dump qw( dump );
 use Search::Tools::XML;
 use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
+
+our $VERSION = '0.04';
+
 my $XMLer = Search::Tools::XML->new;
 
 my $header = <<EOF;
