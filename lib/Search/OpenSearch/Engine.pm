@@ -7,8 +7,9 @@ use Scalar::Util qw( blessed );
 use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
+use CHI;
 
-__PACKAGE__->mk_accessors(qw( index facets fields link ));
+__PACKAGE__->mk_accessors(qw( index facets fields link cache cache_ttl ));
 
 our $VERSION = '0.05';
 
@@ -22,6 +23,14 @@ sub init {
         $self->facets(
             Search::OpenSearch::Facets->new( %{ $self->facets } ) );
     }
+    $self->{cache} ||= CHI->new(
+        driver           => 'File',
+        dir_create_mode  => 0770,
+        file_create_mode => 0660,
+        root_dir         => "/tmp/opensearch_cache",
+    );
+    $self->{cache_ttl} = 60 * 60 * 1;    # 1 hour
+
     return $self;
 }
 sub init_searcher { croak "$_[0] does not implement init_searcher()" }
@@ -72,7 +81,7 @@ sub search {
         ? $response_class->new( total => $results->hits )
         : $response_class->new(
         results   => $results,
-        facets    => $self->get_facets($results),
+        facets    => $self->get_facets( $query, $results ),
         fields    => $self->fields,
         offset    => $offset,
         page_size => $page_size,
@@ -91,7 +100,26 @@ sub set_limit {
 }
 
 sub get_facets {
-    croak "Engine " . ref( $_[0] ) . " must implement get_facets";
+    my $self      = shift;
+    my $query     = shift;
+    my $results   = shift;
+    my $cache_key = ref($self) . $query;
+    my $cache     = $self->cache or return;
+
+    my %facets;
+    if ( $cache->get($cache_key) ) {
+        %facets = %{ $cache->get($cache_key) };
+    }
+    else {
+        my $facets = $self->build_facets( $query, $results );
+        $cache->set( $cache_key, $facest, $self->cache_ttl );
+        %facets = %$facets;
+    }
+    return \%facets;
+}
+
+sub build_facets {
+    croak ref(shift) . " must implement build_facets()";
 }
 
 1;
@@ -184,6 +212,22 @@ Default is to croak().
 =head2 link
 
 The base URI for Responses. Passed to Response->link.
+
+=head2 get_facets( I<query>, I<results> )
+
+Checks the cache for facets related to I<query> and, if found,
+returns them. If not found, calls build_facets(), which must
+be implemented by each Engine subclass.
+
+=head2 cache
+
+Get/set the internal CHI object. Defaults to the File driver.
+
+=head2 cache_ttl
+
+Get/set the cache key time-to-live. Default is 1 hour.
+
+=cut
 
 =head1 AUTHOR
 
