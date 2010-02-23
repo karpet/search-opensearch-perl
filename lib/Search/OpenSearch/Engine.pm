@@ -106,16 +106,15 @@ sub get_facets {
     my $cache_key = ref($self) . $query;
     my $cache     = $self->cache or return;
 
-    my %facets;
+    my $facets;
     if ( $cache->get($cache_key) ) {
-        %facets = %{ $cache->get($cache_key) };
+        $facets = $cache->get($cache_key);
     }
     else {
-        my $facets = $self->build_facets( $query, $results );
+        $facets = $self->build_facets( $query, $results );
         $cache->set( $cache_key, $facest, $self->cache_ttl );
-        %facets = %$facets;
     }
-    return \%facets;
+    return $facets;
 }
 
 sub build_facets {
