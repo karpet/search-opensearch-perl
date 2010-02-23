@@ -112,7 +112,7 @@ sub get_facets {
     }
     else {
         $facets = $self->build_facets( $query, $results );
-        $cache->set( $cache_key, $facest, $self->cache_ttl );
+        $cache->set( $cache_key, $facets, $self->cache_ttl );
     }
     return $facets;
 }
