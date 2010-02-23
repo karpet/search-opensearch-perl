@@ -10,7 +10,7 @@ use Search::OpenSearch::Response::JSON;
 
 __PACKAGE__->mk_accessors(qw( index facets fields link ));
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
@@ -72,7 +72,7 @@ sub search {
         ? $response_class->new( total => $results->hits )
         : $response_class->new(
         results   => $results,
-        facets    => $self->facets,
+        facets    => $self->get_facets($results),
         fields    => $self->fields,
         offset    => $offset,
         page_size => $page_size,
@@ -88,6 +88,10 @@ sub set_limit {
     my %args  = @_;
     my @range = ( $args{field}, $args{lower}, $args{upper} );
     return \@range;
+}
+
+sub get_facets {
+    croak "Engine " . ref( $_[0] ) . " must implement get_facets";
 }
 
 1;

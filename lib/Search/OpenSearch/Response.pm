@@ -28,7 +28,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub init {
     my $self = shift;

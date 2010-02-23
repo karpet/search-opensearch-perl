@@ -8,7 +8,7 @@ use Search::Tools::XML;
 use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my $XMLer = Search::Tools::XML->new;
 
