@@ -8,6 +8,7 @@ use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
 use CHI;
+use Time::HiRes qw( time );
 
 __PACKAGE__->mk_accessors(qw( index facets fields link cache cache_ttl ));
 
@@ -41,7 +42,7 @@ sub search {
     my %args  = @_;
     my $query = $args{'q'};
     if ( !defined $query ) { croak "query required"; }
-
+    my $start_time     = time();
     my $offset         = $args{'o'} || 0;
     my $sort_by        = $args{'s'} || 'score DESC';
     my $page_size      = $args{'p'} || 25;
@@ -76,19 +77,24 @@ sub search {
             limit => \@limits,
         }
     );
+    my $search_time = sprintf( "%0.5f", time() - $start_time );
+    my $start_build = time();
     my $response
         = $count_only
         ? $response_class->new( total => $results->hits )
         : $response_class->new(
-        results   => $results,
-        facets    => $self->get_facets( $query, $results ),
-        fields    => $self->fields,
-        offset    => $offset,
-        page_size => $page_size,
-        total     => $results->hits,
-        query     => $query,
-        link      => $self->link,
+        results     => $results,
+        facets      => $self->get_facets( $query, $results ),
+        fields      => $self->fields,
+        offset      => $offset,
+        page_size   => $page_size,
+        total       => $results->hits,
+        query       => $query,
+        link        => $self->link,
+        search_time => $search_time,
         );
+    my $build_time = sprintf( "%0.5f", time() - $start_build );
+    $response->build_time($build_time);
     return $response;
 }
 

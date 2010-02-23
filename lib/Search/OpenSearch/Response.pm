@@ -25,6 +25,8 @@ __PACKAGE__->mk_accessors(
         link
         author
         pps
+        search_time
+        build_time
         )
 );
 

@@ -35,6 +35,9 @@ sub stringify {
             'opensearch:startIndex'   => $self->offset,
             'opensearch:itemsPerPage' => $self->page_size,
             'id'                      => $UUID_maker->create(),
+            'facets'                  => $self->facets,
+            'search_time'             => $self->search_time,
+            'build_time'              => $self->build_time,
         },
         'feed',
     );
