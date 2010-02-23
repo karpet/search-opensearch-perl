@@ -189,6 +189,10 @@ Pages-per-section. Used by Data::Pageset. Default is "10".
 
 =item link
 
+=item search_time
+
+=item build_time
+
 =back
 
 =head2 fetch_results
