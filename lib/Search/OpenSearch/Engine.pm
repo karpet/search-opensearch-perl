@@ -218,6 +218,11 @@ Checks the cache for facets related to I<query> and, if found,
 returns them. If not found, calls build_facets(), which must
 be implemented by each Engine subclass.
 
+=head2 build_facets( I<query>, I<results> )
+
+Default will croak. Engine subclasses must implement this method
+to provide Facet support.
+
 =head2 cache
 
 Get/set the internal CHI object. Defaults to the File driver.
