@@ -9,7 +9,7 @@ use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 my $XMLer = Search::Tools::XML->new;
 
@@ -38,6 +38,7 @@ sub stringify {
             'facets'                  => $self->facets,
             'search_time'             => $self->search_time,
             'build_time'              => $self->build_time,
+            engine                    => $self->engine,
         },
         'feed',
     );

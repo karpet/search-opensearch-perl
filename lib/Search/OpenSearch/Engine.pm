@@ -12,7 +12,7 @@ use Time::HiRes qw( time );
 
 __PACKAGE__->mk_accessors(qw( index facets fields link cache cache_ttl ));
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
@@ -92,6 +92,7 @@ sub search {
         query       => $query,
         link        => $self->link,
         search_time => $search_time,
+        engine      => blessed($self),
         );
     my $build_time = sprintf( "%0.5f", time() - $start_build );
     $response->build_time($build_time);

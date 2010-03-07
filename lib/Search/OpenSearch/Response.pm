@@ -13,6 +13,7 @@ use overload
 
 __PACKAGE__->mk_accessors(
     qw(
+        engine
         debug
         results
         total
@@ -30,7 +31,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub init {
     my $self = shift;
@@ -192,6 +193,8 @@ Pages-per-section. Used by Data::Pageset. Default is "10".
 =item search_time
 
 =item build_time
+
+=item engine
 
 =back
 

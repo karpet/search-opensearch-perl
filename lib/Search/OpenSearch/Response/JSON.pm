@@ -5,7 +5,7 @@ use Carp;
 use base qw( Search::OpenSearch::Response );
 use JSON;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub stringify {
     my $self    = shift;
@@ -23,6 +23,7 @@ sub stringify {
         title       => $self->title,
         link        => $self->link,
         author      => $self->author,
+        engine      => $self->engine,
     );
 
     # in devel mode use pretty()

@@ -17,3 +17,7 @@ Revision history for Search-OpenSearch
 0.05    22 Feb 2010
         * add facet support
 
+0.06    xxx
+        * add 'engine' to Response
+        * add client tests with WWW::OpenSearch
+
