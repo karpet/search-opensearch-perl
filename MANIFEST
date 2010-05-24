@@ -9,5 +9,6 @@ Makefile.PL
 MANIFEST
 README
 t/00-load.t
+t/01-client.t
 t/pod-coverage.t
 t/pod.t
