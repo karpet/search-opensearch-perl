@@ -7,12 +7,14 @@ use Scalar::Util qw( blessed );
 use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
+use Search::Tools::XML;
+use Search::Tools;
 use CHI;
 use Time::HiRes qw( time );
 
 __PACKAGE__->mk_accessors(qw( index facets fields link cache cache_ttl ));
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
@@ -42,14 +44,17 @@ sub search {
     my %args  = @_;
     my $query = $args{'q'};
     if ( !defined $query ) { croak "query required"; }
-    my $start_time     = time();
-    my $offset         = $args{'o'} || 0;
-    my $sort_by        = $args{'s'} || 'score DESC';
-    my $page_size      = $args{'p'} || 25;
-    my $apply_hilite   = $args{'h'} || 1;
-    my $count_only     = $args{'c'} || 0;
-    my $limits         = $args{'L'} || [];
-    my $include_facets = $args{'f'} || 1;
+    my $start_time      = time();
+    my $offset          = $args{'o'} || 0;
+    my $sort_by         = $args{'s'} || 'score DESC';
+    my $page_size       = $args{'p'} || 25;
+    my $apply_hilite    = $args{'h'} || 1;
+    my $count_only      = $args{'c'} || 0;
+    my $limits          = $args{'L'} || [];
+    my $include_results = $args{'r'};
+    $include_results = 1 unless defined $include_results;
+    my $include_facets = $args{'f'};
+    $include_facets = 1 unless defined $include_facets;
 
     my $format = uc( $args{format} || 'XML' );
     my $response_class = $args{response_class}
@@ -83,8 +88,6 @@ sub search {
         = $count_only
         ? $response_class->new( total => $results->hits )
         : $response_class->new(
-        results     => $results,
-        facets      => $self->get_facets( $query, $results ),
         fields      => $self->fields,
         offset      => $offset,
         page_size   => $page_size,
@@ -94,6 +97,19 @@ sub search {
         search_time => $search_time,
         engine      => blessed($self),
         );
+    if ($include_results) {
+        $response->results(
+            $self->build_results(
+                fields    => $self->fields,
+                results   => $results,
+                page_size => $page_size,
+                query     => $query
+            )
+        );
+    }
+    if ($include_facets) {
+        $response->facets( $self->get_facets( $query, $results ) );
+    }
     my $build_time = sprintf( "%0.5f", time() - $start_build );
     $response->build_time($build_time);
     return $response;
@@ -128,6 +144,51 @@ sub build_facets {
     croak ref(shift) . " must implement build_facets()";
 }
 
+sub build_results {
+    my $self      = shift;
+    my %args      = @_;
+    my $fields    = $args{fields} || $self->fields || [];
+    my $results   = $args{results} or croak "no results defined";
+    my $page_size = $args{page_size} || 25;
+    my $q         = $args{query} or croak "query required";
+    my @results;
+    my $count = 0;
+
+    # TODO how to pass in a stemmer if necessary to the ST->parser?
+    my $XMLer = Search::Tools::XML->new;
+    my $query = Search::Tools->parser()->parse($q);
+    my $snipper
+        = Search::Tools->snipper( query => $query, as_sentences => 1 );
+    my $hiliter = Search::Tools->hiliter( query => $query );
+    while ( my $result = $results->next ) {
+        my $title   = $XMLer->escape( $result->title   || '' );
+        my $summary = $XMLer->escape( $result->summary || '' );
+
+        # \003 is the record-delimiter in Swish3
+        # the default behaviour is just to ignore it
+        # and replace with a single space, but a subclass (like JSON)
+        # might want to split on it to get an array of values
+        $title   =~ s/\003/ /g;
+        $summary =~ s/\003/ /g;
+
+        my %res = (
+            score   => $result->score,
+            uri     => $result->uri,
+            mtime   => $result->mtime,
+            title   => $hiliter->light($title),
+            summary => $hiliter->light( $snipper->snip($summary) ),
+        );
+        for my $field (@$fields) {
+            my $str = $XMLer->escape( $result->get_property($field) || '' );
+            $str =~ s/\003/ /g;
+            $res{$field} = $hiliter->light($str);
+        }
+        push @results, \%res;
+        last if ++$count >= $page_size;
+    }
+    return \@results;
+}
+
 1;
 
 __END__
@@ -156,6 +217,7 @@ Search::OpenSearch::Engine - abstract base class
     c           => 0,                   # return count stats only (no results)
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
+    r           => 1,                   # include results
     format      => 'XML',               # or JSON
     link        => 'http://yourdomain.foo/opensearch/',
  );
@@ -229,6 +291,13 @@ be implemented by each Engine subclass.
 
 Default will croak. Engine subclasses must implement this method
 to provide Facet support.
+
+=head2 build_results( I<results> )
+
+I<results> should be an iterator like SWISH::Prog::Results.
+
+Returns an array ref of hash refs, each corresponding to a single
+search result.
 
 =head2 cache
 

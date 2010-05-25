@@ -9,7 +9,7 @@ use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 my $XMLer = Search::Tools::XML->new;
 
@@ -21,7 +21,7 @@ EOF
 
 sub stringify {
     my $self       = shift;
-    my $pager      = $self->fetch_pager();
+    my $pager      = $self->build_pager();
     my $UUID_maker = Data::UUID->new;
     my @entries    = $self->_build_entries;
 
@@ -129,7 +129,7 @@ sub stringify {
 
 sub _build_entries {
     my $self    = shift;
-    my $results = $self->fetch_results();
+    my $results = $self->results;
     my @entries;
 
     #my $UUID_maker = Data::UUID->new;
@@ -180,6 +180,7 @@ Search::OpenSearch::Response::XML - provide search results in XML format
     c           => 0,                   # return count stats only (no results)
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
+    r           => 1,                   # include results
     format      => 'XML',               # or JSON
  );
  print $response;

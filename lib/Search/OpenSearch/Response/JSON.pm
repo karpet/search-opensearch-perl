@@ -5,31 +5,17 @@ use Carp;
 use base qw( Search::OpenSearch::Response );
 use JSON;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 sub stringify {
-    my $self    = shift;
-    my $results = $self->fetch_results();
+    my $self = shift;
 
-    my %resp = (
-        results     => $results,
-        total       => $self->total,
-        offset      => $self->offset,
-        page_size   => $self->page_size,
-        search_time => $self->search_time,
-        build_time  => $self->build_time,
-        facets      => $self->facets,
-        query       => $self->query,
-        title       => $self->title,
-        link        => $self->link,
-        author      => $self->author,
-        engine      => $self->engine,
-    );
+    my $resp = $self->as_hash;
 
     # in devel mode use pretty()
     return $self->debug
-        ? JSON->new->utf8->pretty(1)->encode( \%resp )
-        : encode_json( \%resp );
+        ? JSON->new->utf8->pretty(1)->encode($resp)
+        : encode_json($resp);
 }
 
 1;
@@ -61,6 +47,7 @@ Search::OpenSearch::Response::JSON - provide search results in JSON format
     c           => 0,                   # return count stats only (no results)
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
+    r           => 1,                   # include results
     format      => 'JSON',              # or XML
  );
  print $response;

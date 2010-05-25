@@ -4,34 +4,29 @@ use warnings;
 use base qw( Rose::ObjectX::CAF );
 use Carp;
 use Data::Pageset;
-use Search::Tools::XML;
-use Search::Tools;
 use overload
     '""'     => sub { $_[0]->stringify; },
     'bool'   => sub {1},
     fallback => 1;
 
-__PACKAGE__->mk_accessors(
-    qw(
-        engine
-        debug
-        results
-        total
-        offset
-        page_size
-        fields
-        facets
-        query
-        title
-        link
-        author
-        pps
-        search_time
-        build_time
-        )
+my @attributes = qw(
+    engine
+    results
+    total
+    offset
+    page_size
+    fields
+    facets
+    query
+    title
+    link
+    author
+    search_time
+    build_time
 );
+__PACKAGE__->mk_accessors( @attributes, qw( debug pps ) );
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 sub init {
     my $self = shift;
@@ -45,57 +40,13 @@ sub init {
 
 sub stringify { croak "$_[0] does not implement stringify()" }
 
-sub fetch_results {
-    my $self    = shift;
-    my $fields  = shift || $self->fields || [];
-    my $results = $self->results or croak "no results defined";
-    my @results;
-    my $count     = 0;
-    my $page_size = $self->page_size;
-
-    # TODO how to pass in a stemmer if necessary to the ST->parser?
-    my $XMLer = Search::Tools::XML->new;
-    my $query = Search::Tools->parser()->parse( $self->query );
-    my $snipper
-        = Search::Tools->snipper( query => $query, as_sentences => 1 );
-    my $hiliter = Search::Tools->hiliter( query => $query );
-    while ( my $result = $results->next ) {
-        my $title   = $XMLer->escape( $result->title   || '' );
-        my $summary = $XMLer->escape( $result->summary || '' );
-
-        # \003 is the record-delimiter in Swish3
-        # the default behaviour is just to ignore it
-        # and replace with a single space, but a subclass (like JSON)
-        # might want to split on it to get an array of values
-        $title   =~ s/\003/ /g;
-        $summary =~ s/\003/ /g;
-
-        my %res = (
-            score   => $result->score,
-            uri     => $result->uri,
-            mtime   => $result->mtime,
-            title   => $hiliter->light($title),
-            summary => $hiliter->light( $snipper->snip($summary) ),
-        );
-        for my $field (@$fields) {
-            my $str = $XMLer->escape( $result->get_property($field) || '' );
-            $str =~ s/\003/ /g;
-            $res{$field} = $hiliter->light($str);
-        }
-        push @results, \%res;
-        last if ++$count >= $page_size;
-    }
-    return \@results;
-}
-
-sub fetch_facets {
+sub as_hash {
     my $self = shift;
-    my $facet_names = shift or croak "facet_names required";
-    croak "TODO";
-
+    my %hash = map { $_ => $self->$_ } @attributes;
+    return \%hash;
 }
 
-sub fetch_pager {
+sub build_pager {
     my $self      = shift;
     my $offset    = $self->offset;
     my $page_size = $self->page_size;
@@ -140,6 +91,7 @@ Search::OpenSearch::Response - provide search results in OpenSearch format
     c           => 0,                   # return count stats only (no results)
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
+    r           => 1,                   # include results
     format      => 'XML',               # or JSON
  );
  print $response;
@@ -198,17 +150,13 @@ Pages-per-section. Used by Data::Pageset. Default is "10".
 
 =back
 
-=head2 fetch_results
-
-Returns arrayref of hashrefs representing the results().
-
-=head2 fetch_facets
-
-Returns arrayref of hashrefs representing the facets of results().
-
-=head2 fetch_pager
+=head2 build_pager
 
 Returns Data::Pageset object based on offset() and page_size().
+
+=head2 as_hash
+
+Returns the Response object as a hash ref of key/value pairs.
 
 =head2 stringify
 
