@@ -5,6 +5,7 @@ use Carp;
 use base qw( Search::OpenSearch::Response );
 use Data::Dump qw( dump );
 use Search::Tools::XML;
+use Encode;
 use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
@@ -123,7 +124,11 @@ sub stringify {
     # add the tags back
     $feed = $header . $feed . "</feed>";
 
-    return $XMLer->tidy($feed);
+    # make sure we have utf8 bytes. tidy() will return UTF-8 decoded
+    # string, so we just encode it back to bytes.
+    # This specifically fixes behaviour under Plack, which requires
+    # bytes, not characters.
+    return Encode::encode_utf8( $XMLer->tidy($feed) );
 
 }
 
