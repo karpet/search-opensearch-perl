@@ -161,32 +161,50 @@ sub build_results {
         = Search::Tools->snipper( query => $query, as_sentences => 1 );
     my $hiliter = Search::Tools->hiliter( query => $query );
     while ( my $result = $results->next ) {
-        my $title   = $XMLer->escape( $result->title   || '' );
-        my $summary = $XMLer->escape( $result->summary || '' );
-
-        # \003 is the record-delimiter in Swish3
-        # the default behaviour is just to ignore it
-        # and replace with a single space, but a subclass (like JSON)
-        # might want to split on it to get an array of values
-        $title   =~ s/\003/ /g;
-        $summary =~ s/\003/ /g;
-
-        my %res = (
-            score   => $result->score,
-            uri     => $result->uri,
-            mtime   => $result->mtime,
-            title   => $hiliter->light($title),
-            summary => $hiliter->light( $snipper->snip($summary) ),
-        );
-        for my $field (@$fields) {
-            my $str = $XMLer->escape( $result->get_property($field) || '' );
-            $str =~ s/\003/ /g;
-            $res{$field} = $hiliter->light($str);
-        }
-        push @results, \%res;
+        push @results,
+            $self->process_result(
+            result  => $result,
+            hiliter => $hiliter,
+            snipper => $snipper,
+            XMLer   => $XMLer,
+            fields  => $fields,
+            );
         last if ++$count >= $page_size;
     }
     return \@results;
+}
+
+sub process_result {
+    my ( $self, %args ) = @_;
+    my $result  = $args{result};
+    my $hiliter = $args{hiliter};
+    my $XMLer   = $args{XMLer};
+    my $snipper = $args{snipper};
+    my $fields  = $args{fields};
+
+    my $title   = $XMLer->escape( $result->title   || '' );
+    my $summary = $XMLer->escape( $result->summary || '' );
+
+    # \003 is the record-delimiter in Swish3
+    # the default behaviour is just to ignore it
+    # and replace with a single space, but a subclass (like JSON)
+    # might want to split on it to get an array of values
+    $title   =~ s/\003/ /g;
+    $summary =~ s/\003/ /g;
+
+    my %res = (
+        score   => $result->score,
+        uri     => $result->uri,
+        mtime   => $result->mtime,
+        title   => $hiliter->light($title),
+        summary => $hiliter->light( $snipper->snip($summary) ),
+    );
+    for my $field (@$fields) {
+        my $str = $XMLer->escape( $result->get_property($field) || '' );
+        $str =~ s/\003/ /g;
+        $res{$field} = $hiliter->light($str);
+    }
+    return \%res;
 }
 
 1;
@@ -298,6 +316,35 @@ I<results> should be an iterator like SWISH::Prog::Results.
 
 Returns an array ref of hash refs, each corresponding to a single
 search result.
+
+=head2 process_result( I<hash_of_args> )
+
+Called by build_results for each result object. I<hash_of_args> is
+a list of key/value pairs that includes:
+
+=over
+
+=item result
+
+The values returned from results->next.
+
+=item hiliter
+
+A Search::Tools::HiLiter object.
+
+=item snipper
+
+A Search::Tools::Snipper object.
+
+=item XMLer
+
+A Search::Tools::XML object.
+
+=item fields
+
+Array ref of fields defined in the new() constructor.
+
+=back
 
 =head2 cache
 

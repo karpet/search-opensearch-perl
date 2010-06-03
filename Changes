@@ -24,4 +24,6 @@ Revision history for Search-OpenSearch
 0.07    xxx
         * refactor base classes to move most functionality into the Engine,
           and added 'r' option to not return results (for facets only, e.g.).
-
+        * stringify() Response classes should always return UTF-8 octets (bytes) 
+          not characters. This should ensure no "wide character" warnings when
+          printing and will work with S::OS::Server::Plack, which requires bytes.
