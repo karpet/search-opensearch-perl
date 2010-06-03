@@ -54,15 +54,7 @@ Search::OpenSearch - provide search results in OpenSearch format
 
 =head1 DESCRIPTION
 
-This module is a work-in-progress. The following features are not yet implemented:
-
-=over
-
-=item facets
-
-=item highlighting
-
-=back
+This module is a work-in-progress. The API is subject to change.
 
 Search::OpenSearch is a framework for various backend engines
 to return results comforming to the OpenSearch API (http://opensearch.org/).
@@ -78,22 +70,6 @@ Returns a new Search::OpenSearch::Engine instance.
 Peter Karman, C<< <karman at cpan.org> >>
 
 =head1 BUGS
-
-=over
-
-=item *
-
-Currently no tests. Major bug.
-
-=item *
-
-OpenSearch is not fully implemented in any Response format, particularly JSON.
-
-=item * 
-
-Facet support documented but non-existent.
-
-=back
 
 Please report any bugs or feature requests to C<bug-search-opensearch at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Search-OpenSearch>.  I will be notified, and then you'll
