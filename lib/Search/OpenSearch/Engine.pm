@@ -12,7 +12,17 @@ use Search::Tools;
 use CHI;
 use Time::HiRes qw( time );
 
-__PACKAGE__->mk_accessors(qw( index facets fields link cache cache_ttl ));
+__PACKAGE__->mk_accessors(
+    qw(
+        index
+        facets
+        fields
+        link
+        cache
+        cache_ttl
+        do_not_hilite
+        )
+);
 
 our $VERSION = '0.07';
 
@@ -32,7 +42,8 @@ sub init {
         file_create_mode => 0660,
         root_dir         => "/tmp/opensearch_cache",
     );
-    $self->{cache_ttl} = 60 * 60 * 1;    # 1 hour
+    $self->{cache_ttl} ||= 60 * 60 * 1;    # 1 hour
+    $self->{do_not_hilite} ||= {};
 
     return $self;
 }
@@ -202,9 +213,19 @@ sub process_result {
     for my $field (@$fields) {
         my $str = $XMLer->escape( $result->get_property($field) || '' );
         $str =~ s/\003/ /g;
-        $res{$field} = $hiliter->light($str);
+        if ( $self->no_hiliting($field) ) {
+            $res{$field} = $str;
+        }
+        else {
+            $res{$field} = $hiliter->light($str);
+        }
     }
     return \%res;
+}
+
+sub no_hiliting {
+    my ( $self, $field ) = @_;
+    return $self->{do_not_hilite}->{$field};
 }
 
 1;
@@ -353,6 +374,16 @@ Get/set the internal CHI object. Defaults to the File driver.
 =head2 cache_ttl
 
 Get/set the cache key time-to-live. Default is 1 hour.
+
+=head2 do_not_hilite
+
+Get/set the hash ref of field names that should not be hilited
+in a Response.
+
+=head2 no_hiliting( I<field_name> )
+
+By default, looks up I<field_name> in the do_no_hilite() hash, but
+you can override this method to implement whatever logic you want.
 
 =cut
 

@@ -7,10 +7,13 @@ use Carp;
 our $VERSION = '0.07';
 
 sub engine {
-    my $class        = shift;
-    my %args         = @_;
-    my $type         = delete $args{type} or croak "type required";
-    my $engine_class = 'Search::OpenSearch::Engine::' . $type;
+    my $class = shift;
+    my %args  = @_;
+    my $type  = delete $args{type} or croak "type required";
+    my $engine_class
+        = $type =~ s/^\+//
+        ? $type
+        : 'Search::OpenSearch::Engine::' . $type;
     eval "use $engine_class";
     if ($@) {
         croak $@;
