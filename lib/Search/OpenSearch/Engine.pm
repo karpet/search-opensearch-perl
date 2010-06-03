@@ -217,7 +217,7 @@ sub process_result {
             $res{$field} = $str;
         }
         else {
-            $res{$field} = $hiliter->light($str);
+            $res{$field} = $hiliter->light( $snipper->snip($str) );
         }
     }
     return \%res;
