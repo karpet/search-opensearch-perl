@@ -41,7 +41,7 @@ sub stringify {
             'build_time'              => $self->build_time,
             engine                    => $self->engine,
         },
-        'feed',
+        'feed', 1
     );
     $feed =~ s,</?feed>,,g;    # strip wrapper tags for now
 
@@ -146,7 +146,7 @@ sub _build_entries {
                 id      => $result->{uri},       # or uuid?
             },
             'entry',
-            0,
+            1,
             1
         );
         my $link = $XMLer->singleton( 'link', { href => $result->{uri} } );
