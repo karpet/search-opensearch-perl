@@ -27,3 +27,6 @@ Revision history for Search-OpenSearch
         * stringify() Response classes should always return UTF-8 octets (bytes) 
           not characters. This should ensure no "wide character" warnings when
           printing and will work with S::OS::Server::Plack, which requires bytes.
+        * add default_boolop support with 'b' param
+        * add parsed_query to Response
+
