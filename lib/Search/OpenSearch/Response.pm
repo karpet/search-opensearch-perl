@@ -18,6 +18,7 @@ my @attributes = qw(
     fields
     facets
     query
+    parsed_query
     title
     link
     author
@@ -93,6 +94,7 @@ Search::OpenSearch::Response - provide search results in OpenSearch format
     f           => 1,                   # include facets
     r           => 1,                   # include results
     format      => 'XML',               # or JSON
+    b           => 'AND',               # or OR
  );
  print $response;
 
@@ -131,6 +133,10 @@ An interator object behaving like SWISH::Prog::Results.
 =item facets
 
 =item query
+
+=item parsed_query
+
+As returned by Search::Query.
 
 =item author
 

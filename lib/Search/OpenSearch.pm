@@ -52,6 +52,7 @@ Search::OpenSearch - provide search results in OpenSearch format
     f           => 1,                   # include facets
     r           => 1,                   # include results
     format      => 'XML',               # or JSON
+    b           => 'AND',               # or OR
  );
  print $response;
 

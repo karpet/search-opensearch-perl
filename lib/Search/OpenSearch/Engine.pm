@@ -62,6 +62,7 @@ sub search {
     my $apply_hilite    = $args{'h'} || 1;
     my $count_only      = $args{'c'} || 0;
     my $limits          = $args{'L'} || [];
+    my $boolop          = $args{'b'} || 'AND';
     my $include_results = $args{'r'};
     $include_results = 1 unless defined $include_results;
     my $include_facets = $args{'f'};
@@ -88,9 +89,10 @@ sub search {
     my $searcher = $self->searcher or croak "searcher not defined";
     my $results = $searcher->search(
         $query,
-        {   start => $offset,
-            max   => $page_size,
-            limit => \@limits,
+        {   start          => $offset,
+            max            => $page_size,
+            limit          => \@limits,
+            default_boolop => $boolop,
         }
     );
     my $search_time = sprintf( "%0.5f", time() - $start_time );
@@ -99,14 +101,15 @@ sub search {
         = $count_only
         ? $response_class->new( total => $results->hits )
         : $response_class->new(
-        fields      => $self->fields,
-        offset      => $offset,
-        page_size   => $page_size,
-        total       => $results->hits,
-        query       => $query,
-        link        => $self->link,
-        search_time => $search_time,
-        engine      => blessed($self),
+        fields       => $self->fields,
+        offset       => $offset,
+        page_size    => $page_size,
+        total        => $results->hits,
+        parsed_query => $results->query->stringify,
+        query        => $query,
+        link         => $self->link,
+        search_time  => $search_time,
+        engine       => blessed($self),
         );
     if ($include_results) {
         $response->results(
@@ -259,6 +262,7 @@ Search::OpenSearch::Engine - abstract base class
     r           => 1,                   # include results
     format      => 'XML',               # or JSON
     link        => 'http://yourdomain.foo/opensearch/',
+    b           => 'AND',               # or OR
  );
  print $response;
 
