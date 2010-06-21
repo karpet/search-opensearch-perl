@@ -55,14 +55,15 @@ sub search {
     my %args  = @_;
     my $query = $args{'q'};
     if ( !defined $query ) { croak "query required"; }
-    my $start_time      = time();
-    my $offset          = $args{'o'} || 0;
-    my $sort_by         = $args{'s'} || 'score DESC';
-    my $page_size       = $args{'p'} || 25;
-    my $apply_hilite    = $args{'h'} || 1;
-    my $count_only      = $args{'c'} || 0;
-    my $limits          = $args{'L'} || [];
-    my $boolop          = $args{'b'} || 'AND';
+    my $start_time   = time();
+    my $offset       = $args{'o'} || 0;
+    my $sort_by      = $args{'s'} || 'score DESC';
+    my $page_size    = $args{'p'} || 25;
+    my $apply_hilite = $args{'h'};
+    $apply_hilite = 1 unless defined $apply_hilite;
+    my $count_only = $args{'c'} || 0;
+    my $limits     = $args{'L'} || [];
+    my $boolop     = $args{'b'} || 'AND';
     my $include_results = $args{'r'};
     $include_results = 1 unless defined $include_results;
     my $include_facets = $args{'f'};
@@ -114,10 +115,11 @@ sub search {
     if ($include_results) {
         $response->results(
             $self->build_results(
-                fields    => $self->fields,
-                results   => $results,
-                page_size => $page_size,
-                query     => $query
+                fields       => $self->fields,
+                results      => $results,
+                page_size    => $page_size,
+                apply_hilite => $apply_hilite,
+                query        => $query
             )
         );
     }
@@ -177,11 +179,12 @@ sub build_results {
     while ( my $result = $results->next ) {
         push @results,
             $self->process_result(
-            result  => $result,
-            hiliter => $hiliter,
-            snipper => $snipper,
-            XMLer   => $XMLer,
-            fields  => $fields,
+            result       => $result,
+            hiliter      => $hiliter,
+            snipper      => $snipper,
+            XMLer        => $XMLer,
+            fields       => $fields,
+            apply_hilite => $args{apply_hilite},
             );
         last if ++$count >= $page_size;
     }
@@ -190,11 +193,12 @@ sub build_results {
 
 sub process_result {
     my ( $self, %args ) = @_;
-    my $result  = $args{result};
-    my $hiliter = $args{hiliter};
-    my $XMLer   = $args{XMLer};
-    my $snipper = $args{snipper};
-    my $fields  = $args{fields};
+    my $result       = $args{result};
+    my $hiliter      = $args{hiliter};
+    my $XMLer        = $args{XMLer};
+    my $snipper      = $args{snipper};
+    my $fields       = $args{fields};
+    my $apply_hilite = $args{apply_hilite};
 
     my $title   = $XMLer->escape( $result->title   || '' );
     my $summary = $XMLer->escape( $result->summary || '' );
@@ -210,13 +214,17 @@ sub process_result {
         score   => $result->score,
         uri     => $result->uri,
         mtime   => $result->mtime,
-        title   => $hiliter->light($title),
-        summary => $hiliter->light( $snipper->snip($summary) ),
+        title   => ( $apply_hilite ? $hiliter->light($title) : $title ),
+        summary => (
+              $apply_hilite
+            ? $hiliter->light( $snipper->snip($summary) )
+            : $summary
+        ),
     );
     for my $field (@$fields) {
         my $str = $XMLer->escape( $result->get_property($field) || '' );
         $str =~ s/\003/ /g;
-        if ( $self->no_hiliting($field) ) {
+        if ( !$apply_hilite or $self->no_hiliting($field) ) {
             $res{$field} = $str;
         }
         else {
