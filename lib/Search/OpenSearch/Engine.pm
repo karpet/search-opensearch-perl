@@ -371,6 +371,8 @@ Array ref of fields defined in the new() constructor.
 
 =back
 
+Returns a hash ref, where each key is a field name.
+
 =head2 cache
 
 Get/set the internal CHI object. Defaults to the File driver.
