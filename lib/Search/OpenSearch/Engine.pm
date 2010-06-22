@@ -21,6 +21,8 @@ __PACKAGE__->mk_accessors(
         cache
         cache_ttl
         do_not_hilite
+        snipper_config
+        hiliter_config
         )
 );
 
@@ -42,8 +44,10 @@ sub init {
         file_create_mode => 0660,
         root_dir         => "/tmp/opensearch_cache",
     );
-    $self->{cache_ttl} ||= 60 * 60 * 1;    # 1 hour
-    $self->{do_not_hilite} ||= {};
+    $self->{cache_ttl}      ||= 60 * 60 * 1;             # 1 hour
+    $self->{do_not_hilite}  ||= {};
+    $self->{snipper_config} ||= { as_sentences => 1 };
+    $self->{hiliter_config} ||= {};
 
     return $self;
 }
@@ -168,14 +172,15 @@ sub build_results {
     my $page_size = $args{page_size} || 25;
     my $q         = $args{query} or croak "query required";
     my @results;
-    my $count = 0;
+    my $count          = 0;
+    my %snipper_config = %{ $self->{snipper_config} };
+    my %hiliter_config = %{ $self->{hiliter_config} };
 
     # TODO how to pass in a stemmer if necessary to the ST->parser?
-    my $XMLer = Search::Tools::XML->new;
-    my $query = Search::Tools->parser()->parse($q);
-    my $snipper
-        = Search::Tools->snipper( query => $query, as_sentences => 1 );
-    my $hiliter = Search::Tools->hiliter( query => $query );
+    my $XMLer   = Search::Tools::XML->new;
+    my $query   = Search::Tools->parser()->parse($q);
+    my $snipper = Search::Tools->snipper( query => $query, %snipper_config );
+    my $hiliter = Search::Tools->hiliter( query => $query, %hiliter_config );
     while ( my $result = $results->next ) {
         push @results,
             $self->process_result(
