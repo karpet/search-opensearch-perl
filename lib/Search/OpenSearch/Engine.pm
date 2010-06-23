@@ -399,6 +399,14 @@ Get/set the cache key time-to-live. Default is 1 hour.
 Get/set the hash ref of field names that should not be hilited
 in a Response.
 
+=head2 snipper_config
+
+Get/set the hash ref of Search::Tools::Snipper->new params.
+
+=head2 hiliter_config
+
+Get/set the hash ref of Search::Tools::HiLiter->new params.
+
 =head2 no_hiliting( I<field_name> )
 
 By default, looks up I<field_name> in the do_no_hilite() hash, but

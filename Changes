@@ -21,7 +21,7 @@ Revision history for Search-OpenSearch
         * add 'engine' to Response
         * add client tests with WWW::OpenSearch
 
-0.07    xxx
+0.07    22 June 2010
         * refactor base classes to move most functionality into the Engine,
           and added 'r' option to not return results (for facets only, e.g.).
         * stringify() Response classes should always return UTF-8 octets (bytes) 
