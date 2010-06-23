@@ -30,3 +30,6 @@ Revision history for Search-OpenSearch
         * add default_boolop support with 'b' param
         * add parsed_query to Response
 
+0.08    xxx
+        * add missing 'order' param to default Searcher params
+

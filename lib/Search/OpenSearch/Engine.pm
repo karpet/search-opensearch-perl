@@ -26,7 +26,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
@@ -96,6 +96,7 @@ sub search {
         $query,
         {   start          => $offset,
             max            => $page_size,
+            order          => $sort_by,
             limit          => \@limits,
             default_boolop => $boolop,
         }
