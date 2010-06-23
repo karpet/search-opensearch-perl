@@ -49,6 +49,7 @@ sub init {
     $self->{do_not_hilite}  ||= {};
     $self->{snipper_config} ||= { as_sentences => 1 };
     $self->{hiliter_config} ||= {};
+    $self->{parser_config}  ||= {};
 
     return $self;
 }
