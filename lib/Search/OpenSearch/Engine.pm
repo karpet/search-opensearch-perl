@@ -23,6 +23,7 @@ __PACKAGE__->mk_accessors(
         do_not_hilite
         snipper_config
         hiliter_config
+        parser_config
         )
 );
 
@@ -176,12 +177,12 @@ sub build_results {
     my $count          = 0;
     my %snipper_config = %{ $self->{snipper_config} };
     my %hiliter_config = %{ $self->{hiliter_config} };
-
-    # TODO how to pass in a stemmer if necessary to the ST->parser?
-    my $XMLer   = Search::Tools::XML->new;
-    my $query   = Search::Tools->parser()->parse($q);
+    my %parser_config  = %{ $self->{parser_config} };
+    my $XMLer          = Search::Tools::XML->new;
+    my $query          = Search::Tools->parser(%parser_config)->parse($q);
     my $snipper = Search::Tools->snipper( query => $query, %snipper_config );
     my $hiliter = Search::Tools->hiliter( query => $query, %hiliter_config );
+
     while ( my $result = $results->next ) {
         push @results,
             $self->process_result(
@@ -407,6 +408,10 @@ Get/set the hash ref of Search::Tools::Snipper->new params.
 =head2 hiliter_config
 
 Get/set the hash ref of Search::Tools::HiLiter->new params.
+
+=head2 parser_config
+
+Get/set the hash ref of Search::Tools::QueryParser->new params.
 
 =head2 no_hiliting( I<field_name> )
 

@@ -32,4 +32,4 @@ Revision history for Search-OpenSearch
 
 0.08    xxx
         * add missing 'order' param to default Searcher params
-
+        * add 'parser_config' to Engine
