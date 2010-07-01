@@ -107,7 +107,13 @@ sub search {
     my $start_build = time();
     my $response
         = $count_only
-        ? $response_class->new( total => $results->hits )
+        ? $response_class->new(
+        total        => $results->hits,
+        parsed_query => $results->query->stringify,
+        query        => $query,
+        search_time  => $search_time,
+        link         => $self->link,
+        )
         : $response_class->new(
         fields       => $self->fields,
         offset       => $offset,
