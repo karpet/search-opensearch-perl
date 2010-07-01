@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 sub engine {
     my $class = shift;
@@ -47,7 +47,7 @@ Search::OpenSearch - provide search results in OpenSearch format
     o           => 0,                   # offset
     p           => 25,                  # page size
     h           => 1,                   # highlight query terms in results
-    c           => 0,                   # return count stats only (no results)
+    c           => 0,                   # count total only (same as f=0 r=0)
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
     r           => 1,                   # include results

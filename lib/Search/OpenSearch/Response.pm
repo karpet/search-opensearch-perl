@@ -27,7 +27,7 @@ my @attributes = qw(
 );
 __PACKAGE__->mk_accessors( @attributes, qw( debug pps ) );
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 sub init {
     my $self = shift;

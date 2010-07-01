@@ -27,7 +27,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
@@ -119,7 +119,7 @@ sub search {
         search_time  => $search_time,
         engine       => blessed($self),
         );
-    if ($include_results) {
+    if ( $include_results && !$count_only ) {
         $response->results(
             $self->build_results(
                 fields       => $self->fields,
@@ -130,7 +130,7 @@ sub search {
             )
         );
     }
-    if ($include_facets) {
+    if ( $include_facets && !$count_only ) {
         $response->facets( $self->get_facets( $query, $results ) );
     }
     my $build_time = sprintf( "%0.5f", time() - $start_build );
@@ -272,7 +272,7 @@ Search::OpenSearch::Engine - abstract base class
     o           => 0,                   # offset
     p           => 25,                  # page size
     h           => 1,                   # highlight query terms in results
-    c           => 0,                   # return count stats only (no results)
+    c           => 0,                   # count total only (same as f=0 r=0)
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
     r           => 1,                   # include results
