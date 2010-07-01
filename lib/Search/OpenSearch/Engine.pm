@@ -11,6 +11,7 @@ use Search::Tools::XML;
 use Search::Tools;
 use CHI;
 use Time::HiRes qw( time );
+use Data::Dump qw( dump );
 
 __PACKAGE__->mk_accessors(
     qw(
@@ -24,6 +25,7 @@ __PACKAGE__->mk_accessors(
         snipper_config
         hiliter_config
         parser_config
+        logger
         )
 );
 
@@ -126,6 +128,9 @@ sub search {
         search_time  => $search_time,
         engine       => blessed($self),
         );
+
+    $self->logger and $self->logger->log("include_results=$include_results include_facets=$include_facets count_only=$count_only");
+
     if ( $include_results && !$count_only ) {
         $response->results(
             $self->build_results(
@@ -161,9 +166,11 @@ sub get_facets {
 
     my $facets;
     if ( $cache->get($cache_key) ) {
+        $self->logger and $self->logger->log("get facets for '$cache_key' from cache");
         $facets = $cache->get($cache_key);
     }
     else {
+        $self->logger and $self->logger->log("build facets for '$cache_key'");
         $facets = $self->build_facets( $query, $results );
         $cache->set( $cache_key, $facets, $self->cache_ttl );
     }
