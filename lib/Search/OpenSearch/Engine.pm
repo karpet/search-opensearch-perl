@@ -113,6 +113,7 @@ sub search {
         query        => $query,
         search_time  => $search_time,
         link         => $self->link,
+        engine       => blessed($self),
         )
         : $response_class->new(
         fields       => $self->fields,
