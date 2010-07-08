@@ -12,6 +12,7 @@ use Search::Tools;
 use CHI;
 use Time::HiRes qw( time );
 use Data::Dump qw( dump );
+use JSON;
 
 __PACKAGE__->mk_accessors(
     qw(
@@ -111,6 +112,7 @@ sub search {
         = $count_only
         ? $response_class->new(
         total        => $results->hits,
+        query_json   => encode_json( $query->tree ),
         parsed_query => $results->query->stringify,
         query        => $query,
         search_time  => $search_time,
@@ -122,6 +124,7 @@ sub search {
         offset       => $offset,
         page_size    => $page_size,
         total        => $results->hits,
+        query_json   => encode_json( $query->tree ),
         parsed_query => $results->query->stringify,
         query        => $query,
         link         => $self->link,
@@ -129,7 +132,10 @@ sub search {
         engine       => blessed($self),
         );
 
-    $self->logger and $self->logger->log("include_results=$include_results include_facets=$include_facets count_only=$count_only");
+    $self->logger
+        and $self->logger->log(
+        "include_results=$include_results include_facets=$include_facets count_only=$count_only"
+        );
 
     if ( $include_results && !$count_only ) {
         $response->results(
@@ -166,7 +172,8 @@ sub get_facets {
 
     my $facets;
     if ( $cache->get($cache_key) ) {
-        $self->logger and $self->logger->log("get facets for '$cache_key' from cache");
+        $self->logger
+            and $self->logger->log("get facets for '$cache_key' from cache");
         $facets = $cache->get($cache_key);
     }
     else {
