@@ -112,7 +112,7 @@ sub search {
         = $count_only
         ? $response_class->new(
         total        => $results->hits,
-        query_json   => encode_json( $query->tree ),
+        query_json   => encode_json( $results->query->tree ),
         parsed_query => $results->query->stringify,
         query        => $query,
         search_time  => $search_time,
@@ -124,7 +124,7 @@ sub search {
         offset       => $offset,
         page_size    => $page_size,
         total        => $results->hits,
-        query_json   => encode_json( $query->tree ),
+        query_json   => encode_json( $results->query->tree ),
         parsed_query => $results->query->stringify,
         query        => $query,
         link         => $self->link,
