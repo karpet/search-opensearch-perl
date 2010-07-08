@@ -36,3 +36,4 @@ Revision history for Search-OpenSearch
 
 0.09    xxx
         * fix bug and clarify docs w.r.t 'c', 'f' and 'r' params to Engine->search()
+        * add "query_json" object to Response
