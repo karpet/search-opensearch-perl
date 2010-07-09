@@ -19,6 +19,7 @@ my @attributes = qw(
     facets
     query
     parsed_query
+    query_json
     title
     link
     author

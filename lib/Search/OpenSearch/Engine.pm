@@ -108,38 +108,27 @@ sub search {
     );
     my $search_time = sprintf( "%0.5f", time() - $start_time );
     my $start_build = time();
-    my $query_tree  = $results->query->tree;
+    my $res_query = $results->query;
+    my $query_tree  = $res_query->tree;
     $self->logger and $self->logger->log( dump $query_tree );
-    my $response
-        = $count_only
-        ? $response_class->new(
+    my $response = $response_class->new(
         total        => $results->hits,
         query_json   => encode_json($query_tree),
-        parsed_query => $results->query->stringify,
+        parsed_query => $res_query->stringify,
         query        => $query,
         search_time  => $search_time,
         link         => $self->link,
-        engine       => blessed($self),
-        )
-        : $response_class->new(
-        fields       => $self->fields,
-        offset       => $offset,
-        page_size    => $page_size,
-        total        => $results->hits,
-        query_json   => encode_json($query_tree),
-        parsed_query => $results->query->stringify,
-        query        => $query,
-        link         => $self->link,
-        search_time  => $search_time,
         engine       => blessed($self),
         );
-
     $self->logger
         and $self->logger->log(
         "include_results=$include_results include_facets=$include_facets count_only=$count_only"
         );
 
     if ( $include_results && !$count_only ) {
+        $response->fields($self->fields);
+        $response->offset($offset);
+        $response->page_size( $page_size);
         $response->results(
             $self->build_results(
                 fields       => $self->fields,
