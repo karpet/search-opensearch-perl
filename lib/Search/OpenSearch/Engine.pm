@@ -108,27 +108,27 @@ sub search {
     );
     my $search_time = sprintf( "%0.5f", time() - $start_time );
     my $start_build = time();
-    my $res_query = $results->query;
+    my $res_query   = $results->query;
     my $query_tree  = $res_query->tree;
     $self->logger and $self->logger->log( dump $query_tree );
     my $response = $response_class->new(
         total        => $results->hits,
-        query_json   => encode_json($query_tree),
+        json_query   => encode_json($query_tree),
         parsed_query => $res_query->stringify,
         query        => $query,
         search_time  => $search_time,
         link         => $self->link,
         engine       => blessed($self),
-        );
+    );
     $self->logger
         and $self->logger->log(
         "include_results=$include_results include_facets=$include_facets count_only=$count_only"
         );
 
     if ( $include_results && !$count_only ) {
-        $response->fields($self->fields);
+        $response->fields( $self->fields );
         $response->offset($offset);
-        $response->page_size( $page_size);
+        $response->page_size($page_size);
         $response->results(
             $self->build_results(
                 fields       => $self->fields,
@@ -431,7 +431,10 @@ Get/set the hash ref of Search::Tools::QueryParser->new params.
 By default, looks up I<field_name> in the do_no_hilite() hash, but
 you can override this method to implement whatever logic you want.
 
-=cut
+=head2 logger( I<logger_object> )
+
+Get/set an optional logging object, which must implement a method
+called B<log> and expect a single string.
 
 =head1 AUTHOR
 

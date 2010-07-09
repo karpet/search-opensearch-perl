@@ -19,7 +19,7 @@ my @attributes = qw(
     facets
     query
     parsed_query
-    query_json
+    json_query
     title
     link
     author
@@ -138,6 +138,11 @@ An interator object behaving like SWISH::Prog::Results.
 =item parsed_query
 
 As returned by Search::Query.
+
+=item json_query
+
+Same as parsed_query, but the object tree is JSON encoded instead
+of stringified.
 
 =item author
 
