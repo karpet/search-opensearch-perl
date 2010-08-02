@@ -30,7 +30,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
@@ -135,12 +135,13 @@ sub search {
                 results      => $results,
                 page_size    => $page_size,
                 apply_hilite => $apply_hilite,
-                query        => $query
+                query        => $query,
+                args         => \%args,          # original args
             )
         );
     }
     if ( $include_facets && !$count_only ) {
-        $response->facets( $self->get_facets( $query, $results ) );
+        $response->facets( $self->get_facets( $query, $results, \%args ) );
     }
     my $build_time = sprintf( "%0.5f", time() - $start_build );
     $response->build_time($build_time);
@@ -169,7 +170,7 @@ sub get_facets {
     }
     else {
         $self->logger and $self->logger->log("build facets for '$cache_key'");
-        $facets = $self->build_facets( $query, $results );
+        $facets = $self->build_facets( $query, $results, @_ );
         $cache->set( $cache_key, $facets, $self->cache_ttl );
     }
     return $facets;
@@ -205,6 +206,7 @@ sub build_results {
             XMLer        => $XMLer,
             fields       => $fields,
             apply_hilite => $args{apply_hilite},
+            args         => \%args,
             );
         last if ++$count >= $page_size;
     }
