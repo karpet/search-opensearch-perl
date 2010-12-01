@@ -38,7 +38,7 @@ Revision history for Search-OpenSearch
         * fix bug and clarify docs w.r.t 'c', 'f' and 'r' params to Engine->search()
         * add "query_json" object to Response
 
-0.10    xxx
+0.10    30 Nov 2010
         * pass original args to Engine->search() through to build_results() and build_facets().
           This (in theory) should make it easier for subclasses to extend the functionality
           of search() without needing to override it.
