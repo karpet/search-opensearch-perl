@@ -43,4 +43,5 @@ Revision history for Search-OpenSearch
           This (in theory) should make it easier for subclasses to extend the functionality
           of search() without needing to override it.
 
-
+0.11    xxx
+        * add has_rest_api feature to base Engine class.
