@@ -45,3 +45,4 @@ Revision history for Search-OpenSearch
 
 0.11    xxx
         * add has_rest_api feature to base Engine class.
+        * add debug attribute to Engine class.

@@ -449,6 +449,10 @@ documents in the index.
 
 Default is false.
 
+=head2 debug([boolean])
+
+Get/set the debug flag for messaging on stderr.
+
 =head1 AUTHOR
 
 Peter Karman, C<< <karman at cpan.org> >>
