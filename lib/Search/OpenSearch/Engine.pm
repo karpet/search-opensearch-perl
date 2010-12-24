@@ -27,6 +27,7 @@ __PACKAGE__->mk_accessors(
         hiliter_config
         parser_config
         logger
+        debug
         )
 );
 
