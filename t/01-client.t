@@ -25,8 +25,10 @@ SKIP:
     );
     my $request = WWW::OpenSearch::Request->new($os_url);
     my $agent   = WWW::OpenSearch::Agent->new();
-    
+
     ok( my $response = $agent->request($request), "get request" );
+
+    #dump( $response );
     is( $response->feed->items, 25, "25 items per page default" );
 
 }
