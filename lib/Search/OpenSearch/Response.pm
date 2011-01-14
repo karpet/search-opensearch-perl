@@ -64,6 +64,15 @@ sub build_pager {
     return $pager;
 }
 
+sub add_attribute {
+    my $self = shift;
+    for my $attr (@_) {
+        $self->mk_accessors($attr);
+        push @attributes, $attr;
+    }
+}
+
+
 1;
 
 __END__
@@ -175,6 +184,12 @@ Returns the Response object as a hash ref of key/value pairs.
 Returns the Response in the chosen serialization format.
 
 Response objects are overloaded to call stringify().
+
+=head2 add_attribute( I<attribute_name> )
+
+Adds get/set method I<attribute_name> to the class and will include
+that attribute in as_hash(). This method is intended to make it easier
+to extend the basic structure without needing to subclass.
 
 =head1 AUTHOR
 
