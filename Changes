@@ -46,3 +46,7 @@ Revision history for Search-OpenSearch
 0.11    07 Jan 2011
         * add has_rest_api feature to base Engine class.
         * add debug attribute to Engine class.
+
+0.12    xxx
+        * add Response->add_attribute feature
+
