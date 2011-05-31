@@ -31,7 +31,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher', );
@@ -112,7 +112,9 @@ sub search {
     my $start_build = time();
     my $res_query   = $results->query;
     my $query_tree  = $res_query->tree;
-    $self->logger and $self->logger->log( dump $query_tree );
+    if ( $self->debug and $self->logger ) {
+        $self->logger->log( dump $query_tree );
+    }
     my $response = $response_class->new(
         total        => $results->hits,
         json_query   => encode_json($query_tree),
@@ -122,10 +124,11 @@ sub search {
         link         => $self->link,
         engine       => blessed($self),
     );
-    $self->logger
-        and $self->logger->log(
-        "include_results=$include_results include_facets=$include_facets count_only=$count_only"
+    if ( $self->debug and $self->logger ) {
+        $self->logger->log(
+            "include_results=$include_results include_facets=$include_facets count_only=$count_only"
         );
+    }
 
     if ( $include_results && !$count_only ) {
         $response->fields( $self->fields );
@@ -166,12 +169,15 @@ sub get_facets {
 
     my $facets;
     if ( $cache->get($cache_key) ) {
-        $self->logger
-            and $self->logger->log("get facets for '$cache_key' from cache");
+        if ( $self->debug and $self->logger ) {
+            $self->logger->log("get facets for '$cache_key' from cache");
+        }
         $facets = $cache->get($cache_key);
     }
     else {
-        $self->logger and $self->logger->log("build facets for '$cache_key'");
+        if ( $self->debug and $self->logger ) {
+            $self->logger->log("build facets for '$cache_key'");
+        }
         $facets = $self->build_facets( $query, $results, @_ );
         $cache->set( $cache_key, $facets, $self->cache_ttl );
     }
