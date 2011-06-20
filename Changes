@@ -50,5 +50,5 @@ Revision history for Search-OpenSearch
 0.12    14 Jan 2011
         * add Response->add_attribute feature
 
-0.13    xxx
+0.13    19 June 2011
         * logger dependent on debug==true
