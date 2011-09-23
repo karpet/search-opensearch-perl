@@ -52,3 +52,6 @@ Revision history for Search-OpenSearch
 
 0.13    19 June 2011
         * logger dependent on debug==true
+
+0.14    xxx
+        * create UUID string instead of binary in XML response format 

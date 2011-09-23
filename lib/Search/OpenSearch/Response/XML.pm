@@ -10,7 +10,7 @@ use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 my $XMLer = Search::Tools::XML->new;
 
@@ -28,6 +28,20 @@ sub stringify {
 
     my $now = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
 
+    my $query_encoded = uri_encode( $self->query );
+    my $this_uri
+        = $self->link
+        . '?format=XML&q='
+        . $query_encoded . '&p='
+        . $self->page_size;
+
+    my $self_link = $XMLer->singleton(
+        'link',
+        {   rel  => 'self',
+            href => $this_uri . '&o=' . $self->offset
+        }
+    );
+
     my $feed = $XMLer->perl_to_xml(
         {   title                     => $self->title,
             author                    => $self->author,
@@ -35,11 +49,13 @@ sub stringify {
             'opensearch:totalResults' => $self->total,
             'opensearch:startIndex'   => $self->offset,
             'opensearch:itemsPerPage' => $self->page_size,
-            'id'                      => $UUID_maker->create(),
-            'facets'                  => $self->facets,
-            'search_time'             => $self->search_time,
-            'build_time'              => $self->build_time,
-            engine                    => $self->engine,
+            'id' =>
+                $UUID_maker->create_from_name_str( NameSpace_URL, $self_link,
+                ),
+            'facets'      => $self->facets,
+            'search_time' => $self->search_time,
+            'build_time'  => $self->build_time,
+            engine        => $self->engine,
         },
         'feed', 1
     );
@@ -60,19 +76,6 @@ sub stringify {
 
     # pager links
     my @pager_links;
-    my $query_encoded = uri_encode( $self->query );
-    my $this_uri
-        = $self->link
-        . '?format=XML&q='
-        . $query_encoded . '&p='
-        . $self->page_size;
-
-    my $self_link = $XMLer->singleton(
-        'link',
-        {   rel  => 'self',
-            href => $this_uri . '&o=' . $self->offset
-        }
-    );
     push @pager_links, $self_link;
 
     unless ( $pager->current_page == $pager->first_page ) {
