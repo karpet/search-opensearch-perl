@@ -19,7 +19,7 @@ SKIP:
 
     require WWW::OpenSearch::Url;
     my $os_url = WWW::OpenSearch::Url->new(
-        template => "http://localhost:5000/?format=XML&q=test",
+        template => "http://localhost:5000/search?format=XML&q=test",
         method   => 'GET',
         ns       => 'http://a9.com/-/spec/opensearch/1.1/',     #'opensearch',
     );

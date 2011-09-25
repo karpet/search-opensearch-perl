@@ -56,4 +56,4 @@ Revision history for Search-OpenSearch
 0.14    xxx
         * create UUID string instead of binary in XML response format 
         * default hiliter config now uses tag <b class="h"> instead of <span style="...">
-
+        * add init_default_response_format to base Engine class.
