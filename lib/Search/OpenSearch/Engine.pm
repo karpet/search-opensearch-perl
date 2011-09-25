@@ -49,10 +49,10 @@ sub init {
         file_create_mode => 0660,
         root_dir         => "/tmp/opensearch_cache",
     );
-    $self->{cache_ttl}      ||= 60 * 60 * 1;             # 1 hour
+    $self->{cache_ttl}      ||= 60 * 60 * 1;                    # 1 hour
     $self->{do_not_hilite}  ||= {};
     $self->{snipper_config} ||= { as_sentences => 1 };
-    $self->{hiliter_config} ||= {};
+    $self->{hiliter_config} ||= { class => 'h', tag => 'b' };
     $self->{parser_config}  ||= {};
 
     return $self;
