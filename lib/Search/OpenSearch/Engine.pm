@@ -31,7 +31,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -83,7 +83,10 @@ sub search {
     my $include_facets = $args{'f'};
     $include_facets = 1 unless defined $include_facets;
 
-    my $format = uc( $args{format} || $self->default_response_format );
+    my $format
+        = uc(  $args{'t'}
+            || $args{'format'}
+            || $self->default_response_format );
     my $response_class = $args{response_class}
         || 'Search::OpenSearch::Response::' . $format;
 
@@ -124,7 +127,7 @@ sub search {
         parsed_query => $res_query->stringify,
         query        => $query,
         search_time  => $search_time,
-        link         => $self->link,
+        link         => ( $args{'L'} || $args{'link'} || $self->link ),
         engine       => blessed($self),
     );
     if ( $self->debug and $self->logger ) {
@@ -301,8 +304,8 @@ Search::OpenSearch::Engine - abstract base class
     L           => 'field|low|high',    # limit results to inclusive range
     f           => 1,                   # include facets
     r           => 1,                   # include results
-    format      => 'XML',               # or JSON
-    link        => 'http://yourdomain.foo/opensearch/',
+    t           => 'XML',               # or JSON
+    L           => 'http://yourdomain.foo/opensearch/',
     b           => 'AND',               # or OR
  );
  print $response;
