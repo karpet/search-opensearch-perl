@@ -37,11 +37,11 @@ WriteMakefile(
         : ( META_MERGE => {
                 resources => {
                     license  => 'http://dev.perl.org/licenses/',
-                    homepage => 'http://perl.peknet.com/',
+                    homepage => 'https://github.com/karpet/search-opensearch-perl',
                     bugtracker =>
                         'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Search-OpenSearch',
                     repository =>
-                        'http://svn.peknet.com/perl/Search-OpenSearch/',
+                        'git://github.com/karpet/search-opensearch-perl.git',
                 },
             }
         )
