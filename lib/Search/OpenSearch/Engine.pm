@@ -131,7 +131,7 @@ sub search {
         parsed_query => $res_query->stringify,
         query        => $query,
         search_time  => $search_time,
-        link         => ( $args{'L'} || $args{'link'} || $self->link ),
+        link         => ( $args{'u'} || $args{'link'} || $self->link ),
         engine       => blessed($self),
     );
     if ( $self->debug and $self->logger ) {
@@ -327,7 +327,7 @@ Search::OpenSearch::Engine - abstract base class
     f           => 1,                   # include facets
     r           => 1,                   # include results
     t           => 'XML',               # or JSON
-    L           => 'http://yourdomain.foo/opensearch/',
+    u           => 'http://yourdomain.foo/opensearch/',
     b           => 'AND',               # or OR
  );
  print $response;
