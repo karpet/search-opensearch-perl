@@ -60,6 +60,6 @@ Revision history for Search-OpenSearch
 
 0.15    xxx
         * add 't' param, deprecating 'format'
-        * add 'L' param, deprecating 'link'
+        * add 'u' param, deprecating 'link'
         * add searcher_config and indexer_config and flesh out new() pod.
 
