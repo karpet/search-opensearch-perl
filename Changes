@@ -58,7 +58,7 @@ Revision history for Search-OpenSearch
         * default hiliter config now uses tag <b class="h"> instead of <span style="...">
         * add init_default_response_format to base Engine class.
 
-0.15    xxx
+0.15    22 Oct 2011
         * add 't' param, deprecating 'format'
         * add 'u' param, deprecating 'link'
         * add searcher_config and indexer_config and flesh out new() pod.
