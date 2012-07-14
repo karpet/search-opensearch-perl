@@ -87,6 +87,10 @@ sub search {
     my $include_facets = $args{'f'};
     $include_facets = 1 unless defined $include_facets;
 
+    if ( $self->debug and $self->logger ) {
+        $self->logger->log( dump( \%args ) );
+    }
+
     my $format
         = uc(  $args{'t'}
             || $args{'format'}
