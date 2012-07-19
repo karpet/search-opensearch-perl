@@ -35,7 +35,7 @@ sub stringify {
         = ( $self->link || '' )
         . '?format=XML&q='
         . $query_encoded . '&p='
-        . $self->page_size;
+        . ( $self->page_size || '' );
 
     my $self_link = $XMLer->singleton(
         'link',
