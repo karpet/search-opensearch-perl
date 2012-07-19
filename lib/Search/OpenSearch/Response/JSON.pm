@@ -75,6 +75,10 @@ Returns the Response in JSON format.
 
 Response objects are overloaded to call stringify().
 
+=head2 content_type
+
+Returns appropriate MIME type for the format returned by stringify().
+
 =head1 AUTHOR
 
 Peter Karman, C<< <karman at cpan.org> >>
