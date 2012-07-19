@@ -92,10 +92,16 @@ sub search {
         $self->logger->log( dump( \%args ) );
     }
 
-    my $format
-        = uc(  $args{'t'}
-            || $args{'format'}
-            || $self->default_response_format );
+    my $format 
+        = $args{'t'}
+        || $args{'format'}
+        || $self->default_response_format;
+
+    # backwards compat
+    if ( $format eq 'xml' or $format eq 'json' ) {
+        $format = uc($format);
+    }
+
     my $response_class = $args{response_class}
         || 'Search::OpenSearch::Response::' . $format;
 
