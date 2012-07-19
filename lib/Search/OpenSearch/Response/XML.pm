@@ -30,7 +30,7 @@ sub stringify {
     my $query = $self->query;
     $query = "" unless defined $query;
 
-    my $query_encoded = uri_encode($query);
+    my $query_encoded = uri_encode($query) || "";
     my $this_uri
         = ( $self->link || '' )
         . '?format=XML&q='
