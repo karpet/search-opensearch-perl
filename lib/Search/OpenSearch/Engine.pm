@@ -7,6 +7,7 @@ use Scalar::Util qw( blessed );
 use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
+use Search::OpenSearch::Response::ExtJS;
 use Search::Tools::XML;
 use Search::Tools;
 use CHI;

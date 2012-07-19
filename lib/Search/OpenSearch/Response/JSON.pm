@@ -11,7 +11,7 @@ sub stringify {
     my $self = shift;
 
     my $resp = $self->as_hash;
-
+    
     # in devel mode use pretty()
     return $self->debug
         ? JSON->new->utf8->pretty(1)->encode($resp)

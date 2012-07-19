@@ -27,8 +27,10 @@ sub stringify {
     my @entries    = $self->_build_entries;
 
     my $now = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
+    my $query = $self->query;
+    $query = "" unless defined $query;
 
-    my $query_encoded = uri_encode( $self->query );
+    my $query_encoded = uri_encode($query);
     my $this_uri
         = $self->link
         . '?format=XML&q='
@@ -66,7 +68,7 @@ sub stringify {
         'opensearch:Query',
         {   role         => 'request',
             totalResults => $self->total,
-            searchTerms  => $self->query,
+            searchTerms  => $query,
             startIndex   => $self->offset,
         }
     );
