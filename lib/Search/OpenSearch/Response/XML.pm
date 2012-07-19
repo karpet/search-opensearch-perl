@@ -32,7 +32,7 @@ sub stringify {
 
     my $query_encoded = uri_encode($query);
     my $this_uri
-        = $self->link
+        = ( $self->link || '' )
         . '?format=XML&q='
         . $query_encoded . '&p='
         . $self->page_size;
