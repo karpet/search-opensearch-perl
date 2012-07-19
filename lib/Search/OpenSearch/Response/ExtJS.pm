@@ -15,18 +15,23 @@ sub stringify {
 
     my $resp = $self->as_hash;
 
-    $resp->{metaData} = {
-        idProperty      => 'uri',
-        root            => 'results',
-        totalProperty   => 'total',
-        successProperty => 'success',
-        start           => delete $resp->{offset},
-        limit           => delete $resp->{page_size},
-    };
-    my @fields = ( @{ delete( $resp->{fields} ) || [] },
-        @{ $self->default_fields } );
-    $resp->{metaData}->{fields} = \@fields;
-    $resp->{success} = 1;
+    if ( !defined $resp->{metaData} ) {
+        $resp->{metaData} = {
+            idProperty      => 'uri',
+            root            => 'results',
+            totalProperty   => 'total',
+            successProperty => 'success',
+            start           => delete $resp->{offset},
+            limit           => delete $resp->{page_size},
+        };
+        my @fields = (
+            @{ delete( $resp->{fields} ) || [] },
+            @{ $self->default_fields }
+        );
+        $resp->{metaData}->{fields} = \@fields;
+    }
+
+    $resp->{success} = 1 unless defined $resp->{success};
 
     # in devel mode use pretty()
     return $self->debug
