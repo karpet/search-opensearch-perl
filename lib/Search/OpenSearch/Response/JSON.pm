@@ -18,6 +18,8 @@ sub stringify {
         : encode_json($resp);
 }
 
+sub content_type { return 'application/json' }
+
 1;
 
 __END__

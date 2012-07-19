@@ -159,6 +159,8 @@ sub _build_entries {
     return @entries;
 }
 
+sub content_type { return 'application/xml' }
+
 1;
 
 __END__

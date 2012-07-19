@@ -65,3 +65,4 @@ Revision history for Search-OpenSearch
 
 0.16    xxx
         * add missing dependency on Data::UUID
+        * add content_type() get method on Response subclasses
