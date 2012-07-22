@@ -20,6 +20,7 @@ my $header = <<EOF;
        xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
 EOF
 
+# TODO add sort_info
 sub stringify {
     my $self       = shift;
     my $pager      = $self->build_pager();

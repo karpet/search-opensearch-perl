@@ -16,6 +16,14 @@ sub stringify {
     my $resp = $self->as_hash;
 
     if ( !defined $resp->{metaData} ) {
+        my $sort_info = delete $resp->{sort_info};
+        if ($sort_info) {
+            my ( $field, $dir ) = split( /\ +/, $sort_info );
+            if ( !$dir ) {
+                $dir = 'ASC';
+            }
+            $sort_info = { field => $field, direction => $dir };
+        }
         $resp->{metaData} = {
             idProperty      => 'uri',
             root            => 'results',
@@ -23,6 +31,7 @@ sub stringify {
             successProperty => 'success',
             start           => delete $resp->{offset},
             limit           => delete $resp->{page_size},
+            sortInfo        => $sort_info,
         };
         my @fields = (
             @{ delete( $resp->{fields} ) || [] },

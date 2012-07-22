@@ -10,8 +10,11 @@ use_ok('Search::OpenSearch::Response::ExtJS');
 use_ok('Search::OpenSearch::Response::XML');
 use_ok('Search::OpenSearch::Response::JSON');
 
-ok( my $extjs_response = Search::OpenSearch::Response::ExtJS->new(),
-    "new Response::ExtJS object" );
+ok( my $extjs_response = Search::OpenSearch::Response::ExtJS->new(
+        sort_info => 'score DESC',
+    ),
+    "new Response::ExtJS object"
+);
 
 ok( my $extjs = decode_json("$extjs_response"), "decode ExtJS" );
 
@@ -30,6 +33,7 @@ my $extjs_expected = {
         start           => 0,
         successProperty => "success",
         totalProperty   => "total",
+        sortInfo => { field => 'score', direction => 'DESC' },
     },
     parsed_query => undef,
     query        => undef,
@@ -66,6 +70,7 @@ my $json_expected = {
     total        => undef,
     page_size    => 10,
     offset       => 0,
+    sort_info    => undef,                                  #'score DESC',
 };
 
 is_deeply( $json, $json_expected, "json structure" );

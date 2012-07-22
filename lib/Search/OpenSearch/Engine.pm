@@ -144,6 +144,7 @@ sub search {
         search_time  => $search_time,
         link         => ( $args{'u'} || $args{'link'} || $self->link ),
         engine       => blessed($self),
+        sort_info    => $sort_by,
     );
     if ( $self->debug and $self->logger ) {
         $self->logger->log(
@@ -181,11 +182,17 @@ sub set_limit {
     return \@range;
 }
 
+sub get_facets_cache_key {
+    my $self = shift;
+    my ( $query, $args ) = @_;
+    return ref($self) . $query;
+}
+
 sub get_facets {
     my $self      = shift;
     my $query     = shift;
     my $results   = shift;
-    my $cache_key = ref($self) . $query;
+    my $cache_key = $self->get_facets_cache_key( $query, @_ );
     my $cache     = $self->cache or return;
 
     my $facets;
@@ -400,6 +407,12 @@ Default is to croak().
 =head2 link
 
 The base URI for Responses. Passed to Response->link.
+
+=head2 get_facets_cache_key( I<query>, I<search_args> )
+
+Returns a string used to key the facets cache. Override this
+method in a subclass to implement more nuanced string
+construction.
 
 =head2 get_facets( I<query>, I<results> )
 

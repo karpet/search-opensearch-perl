@@ -67,4 +67,4 @@ Revision history for Search-OpenSearch
         * add missing dependency on Data::UUID
         * add content_type() get method on Response subclasses
         * add Response::ExtJS class
-
+        * add get_facets_cache_key() method to Engine

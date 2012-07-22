@@ -25,6 +25,7 @@ my @attributes = qw(
     author
     search_time
     build_time
+    sort_info
 );
 __PACKAGE__->mk_accessors( @attributes, qw( debug pps ) );
 
@@ -185,6 +186,8 @@ Pages-per-section. Used by Data::Pageset. Default is "10".
 =item build_time
 
 =item engine
+
+=item sort_info
 
 =back
 
