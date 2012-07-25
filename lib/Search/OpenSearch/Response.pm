@@ -37,6 +37,10 @@ sub default_fields {
     return [qw( uri title summary mtime score )];
 }
 
+sub clear_attributes {
+    %ATTRIBUTES = ();
+}
+
 sub init {
     my $self = shift;
 
@@ -215,6 +219,10 @@ to extend the basic structure without needing to subclass.
 
 Returns array ref of default result field names. These are implemented
 by the default Engine class.
+
+=head2 clear_attributes
+
+Resets the class data for attributes. Use with caution.
 
 =head1 AUTHOR
 
