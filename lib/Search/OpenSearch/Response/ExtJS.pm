@@ -4,6 +4,7 @@ use warnings;
 use Carp;
 use base qw( Search::OpenSearch::Response::JSON );
 use JSON;
+use Sort::SQL;
 
 our $VERSION = '0.16';
 
@@ -18,11 +19,11 @@ sub stringify {
     if ( !defined $resp->{metaData} ) {
         my $sort_info = delete $resp->{sort_info};
         if ($sort_info) {
-            my ( $field, $dir ) = split( /\ +/, $sort_info );
-            if ( !$dir ) {
-                $dir = 'ASC';
-            }
-            $sort_info = { field => $field, direction => $dir };
+            my $sorted = Sort::SQL->parse($sort_info);
+            $sort_info = {
+                field     => $sorted->[0]->[0],
+                direction => $sorted->[0]->[1],
+            };
         }
         $resp->{metaData} = {
             idProperty      => 'uri',
