@@ -29,7 +29,7 @@ my @attributes = qw(
 );
 __PACKAGE__->mk_accessors( @attributes, qw( debug pps ) );
 
-our $VERSION = '0.16';
+our $VERSION = '0.16_01';
 
 our %ATTRIBUTES = ();
 

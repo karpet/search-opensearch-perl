@@ -70,3 +70,5 @@ Revision history for Search-OpenSearch
         * add get_facets_cache_key() method to Engine
         * refactor Response->add_attribute() method
 
+0.17    xxx
+
