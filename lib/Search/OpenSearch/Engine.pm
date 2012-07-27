@@ -23,6 +23,7 @@ __PACKAGE__->mk_accessors(
         link
         cache
         cache_ttl
+        cache_ok
         do_not_hilite
         snipper_config
         hiliter_config
@@ -48,12 +49,15 @@ sub init {
         $self->facets(
             Search::OpenSearch::Facets->new( %{ $self->facets } ) );
     }
-    $self->{cache} ||= CHI->new(
-        driver           => 'File',
-        dir_create_mode  => 0770,
-        file_create_mode => 0660,
-        root_dir         => "/tmp/opensearch_cache",
-    );
+    $self->{cache_ok} = 1 unless defined $self->{cache_ok};
+    if ( $self->{cache_ok} ) {
+        $self->{cache} ||= CHI->new(
+            driver           => 'File',
+            dir_create_mode  => 0770,
+            file_create_mode => 0660,
+            root_dir         => "/tmp/opensearch_cache",
+        );
+    }
     $self->{cache_ttl}       ||= 60 * 60 * 1;                    # 1 hour
     $self->{do_not_hilite}   ||= {};
     $self->{snipper_config}  ||= { as_sentences => 1 };
@@ -321,6 +325,7 @@ Search::OpenSearch::Engine - abstract base class
     searcher_config => {
         anotherkey => anothervalue,
     },
+    cache_ok        => 1,
     cache           => CHI->new(
         driver           => 'File',
         dir_create_mode  => 0770,
@@ -462,6 +467,12 @@ Array ref of fields defined in the new() constructor.
 =back
 
 Returns a hash ref, where each key is a field name.
+
+=head2 cache_ok
+
+If set to C<0>, no internal cache object will be created for you.
+You can still set one in the B<cache> param, but the
+automatic creation is turned off.
 
 =head2 cache
 

@@ -37,20 +37,11 @@ sub default_fields {
     return [qw( uri title summary mtime score )];
 }
 
-sub clear_attributes {
-    %ATTRIBUTES = ();
-}
-
 sub init {
     my $self = shift;
 
     my $class = ref $self;
-    if ( !exists $ATTRIBUTES{$class} ) {
-        $ATTRIBUTES{$class} = \@attributes;
-    }
-    else {
-        push @{ $ATTRIBUTES{$class} }, @attributes;
-    }
+    map { $ATTRIBUTES{$class}->{$_} = $_ } @attributes;
 
     $self->SUPER::init(@_);
     $self->{title}     ||= 'OpenSearch Results';
@@ -66,7 +57,7 @@ sub stringify { croak "$_[0] does not implement stringify()" }
 
 sub as_hash {
     my $self = shift;
-    my %hash = map { $_ => $self->$_ } @{ $ATTRIBUTES{ ref $self } };
+    my %hash = map { $_ => $self->$_ } keys %{ $ATTRIBUTES{ ref $self } };
     return \%hash;
 }
 
@@ -91,7 +82,7 @@ sub add_attribute {
     my $class = ref $self ? ref $self : $self;
     for my $attr (@_) {
         $self->mk_accessors($attr);
-        push @{ $ATTRIBUTES{$class} }, $attr;
+        $ATTRIBUTES{$class}->{$attr} = $attr;
     }
 }
 
@@ -219,10 +210,6 @@ to extend the basic structure without needing to subclass.
 
 Returns array ref of default result field names. These are implemented
 by the default Engine class.
-
-=head2 clear_attributes
-
-Resets the class data for attributes. Use with caution.
 
 =head1 AUTHOR
 
