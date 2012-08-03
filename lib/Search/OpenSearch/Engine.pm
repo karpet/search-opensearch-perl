@@ -42,6 +42,13 @@ use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'default_response_format',
 );
 
+sub version {
+    my $self = shift;
+    my $class = ref $self ? ref($self) : $self;
+    no strict 'refs';
+    return ${"${class}::VERSION"};
+}
+
 sub init {
     my $self = shift;
     $self->SUPER::init(@_);
@@ -147,7 +154,7 @@ sub search {
         query        => $query,
         search_time  => $search_time,
         link         => ( $args{'u'} || $args{'link'} || $self->link ),
-        engine       => blessed($self),
+        engine       => blessed($self) . ' ' . $self->version(),
         sort_info    => $sort_by,
     );
     if ( $self->debug and $self->logger ) {
@@ -364,6 +371,10 @@ some sane method behavior based on the SWISH::Prog::Searcher API.
 
 This class is a subclass of Rose::ObjectX::CAF. Only new or overridden
 methods are documented here.
+
+=head2 version
+
+Returns the $VERSION for the Engine.
 
 =head2 init
 

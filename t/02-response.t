@@ -1,14 +1,14 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 11;
 use JSON;
 use Data::Dump qw( dump );
 use Search::Tools::XML;
 
-use_ok('Search::OpenSearch::Response::ExtJS');
-use_ok('Search::OpenSearch::Response::XML');
-use_ok('Search::OpenSearch::Response::JSON');
+use Search::OpenSearch::Response::ExtJS;
+use Search::OpenSearch::Response::XML;
+use Search::OpenSearch::Response::JSON;
 
 ok( my $extjs_response = Search::OpenSearch::Response::ExtJS->new(
         sort_info => 'score DESC',
@@ -42,6 +42,7 @@ my $extjs_expected = {
     success      => 1,
     title        => "OpenSearch Results",
     total        => undef,
+    version      => $Search::OpenSearch::Response::ExtJS::VERSION,
 };
 
 is_deeply( $extjs, $extjs_expected, "extjs structure" );
@@ -71,6 +72,7 @@ my $json_expected = {
     page_size    => 10,
     offset       => 0,
     sort_info    => undef,                                  #'score DESC',
+    version      => $Search::OpenSearch::Response::JSON::VERSION,
 };
 
 is_deeply( $json, $json_expected, "json structure" );

@@ -71,4 +71,5 @@ Revision history for Search-OpenSearch
         * refactor Response->add_attribute() method
 
 0.17    xxx
+        * add version() to Response and Engine classes.
 

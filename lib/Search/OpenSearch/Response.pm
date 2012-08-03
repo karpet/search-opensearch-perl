@@ -26,6 +26,7 @@ my @attributes = qw(
     search_time
     build_time
     sort_info
+    version
 );
 __PACKAGE__->mk_accessors( @attributes, qw( debug pps ) );
 
@@ -35,6 +36,13 @@ our %ATTRIBUTES = ();
 
 sub default_fields {
     return [qw( uri title summary mtime score )];
+}
+
+sub get_version {
+    my $self = shift;
+    my $class = ref $self ? ref($self) : $self;
+    no strict 'refs';
+    return ${"${class}::VERSION"};
 }
 
 sub init {
@@ -50,6 +58,7 @@ sub init {
     $self->{pps}       ||= 10;
     $self->{offset}    ||= 0;
     $self->{page_size} ||= 10;
+    $self->{version}   ||= $self->get_version();
     return $self;
 }
 
@@ -131,6 +140,10 @@ common methods for all Response subclasses.
 This class is a subclass of Rose::ObjectX::CAF. Only new or overridden
 methods are documented here.
 
+=head2 get_version
+
+Returns the package var $VERSION string by default.
+
 =head2 init
 
 Sets some defaults for a new Response.
@@ -183,6 +196,8 @@ Pages-per-section. Used by Data::Pageset. Default is "10".
 =item engine
 
 =item sort_info
+
+=item version
 
 =back
 
