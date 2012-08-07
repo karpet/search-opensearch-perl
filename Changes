@@ -72,4 +72,4 @@ Revision history for Search-OpenSearch
 
 0.17    xxx
         * add version() to Response and Engine classes.
-
+        * add error() method to Response and Engine classes.

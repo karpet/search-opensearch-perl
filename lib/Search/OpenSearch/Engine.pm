@@ -32,6 +32,7 @@ __PACKAGE__->mk_accessors(
         searcher_config
         logger
         debug
+        error
         )
 );
 
@@ -552,6 +553,10 @@ Get/set the debug flag for messaging on stderr.
 =head2 init_default_response_format
 
 Returns default response format. Defaults to 'XML'.
+
+=head2 error
+
+Get/set the error value for the Engine. 
 
 =head1 AUTHOR
 

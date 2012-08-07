@@ -28,7 +28,7 @@ my @attributes = qw(
     sort_info
     version
 );
-__PACKAGE__->mk_accessors( @attributes, qw( debug pps ) );
+__PACKAGE__->mk_accessors( @attributes, qw( debug pps error ) );
 
 our $VERSION = '0.16_01';
 
@@ -225,6 +225,12 @@ to extend the basic structure without needing to subclass.
 
 Returns array ref of default result field names. These are implemented
 by the default Engine class.
+
+=head2 error
+
+Get/set error value for the Response. This value is not included
+in the stringify() output, but can be used to set or check for
+errors in processing.
 
 =head1 AUTHOR
 
