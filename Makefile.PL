@@ -1,51 +1,30 @@
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
+use inc::Module::Install;
+use 5.008003;
 
-my $MM_Version = $ExtUtils::MakeMaker::VERSION;
+name 'Search-OpenSearch';
+perl_version '5.8.3';
+all_from 'lib/Search/OpenSearch.pm';
 
-if ( $MM_Version =~ /_/ )    # dev version
-{
-    $MM_Version = eval $MM_Version;
-    die $@ if ($@);
-}
+requires 'Test::More'         => 0;
+requires 'JSON'               => 0;
+requires 'Rose::ObjectX::CAF' => 0;
+requires 'Scalar::Util'       => 0;
+requires 'URI::Encode'        => 0;
+requires 'Data::Pageset'      => 0;
+requires 'Search::Tools'      => 0;
+requires 'CHI'                => 0;
+requires 'Data::UUID'         => 0;
+requires 'Sort::SQL'          => 0;
+
+license 'http://dev.perl.org/licenses/';
+homepage 'https://github.com/karpet/search-opensearch-perl';
+bugtracker 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Search-OpenSearch';
+repository 'http://github.com/karpet/search-opensearch-perl';
 
 WriteMakefile(
-    NAME          => 'Search::OpenSearch',
-    AUTHOR        => q{Peter Karman <karman@cpan.org>},
-    VERSION_FROM  => 'lib/Search/OpenSearch.pm',
-    ABSTRACT_FROM => 'lib/Search/OpenSearch.pm',
-    ( $ExtUtils::MakeMaker::VERSION >= 6.3002
-        ? ( 'LICENSE' => 'perl' )
-        : () ),
-    PL_FILES  => {},
-    PREREQ_PM => {
-        'Test::More'         => 0,
-        'JSON'               => 0,
-        'Rose::ObjectX::CAF' => 0,
-        'Scalar::Util'       => 0,
-        'URI::Encode'        => 0,
-        'Data::Pageset'      => 0,
-        'Search::Tools'      => 0,
-        'CHI'                => 0,
-        'Data::UUID'         => 0,
-        'Sort::SQL'          => 0,
-    },
-    dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean => { FILES    => 'Search-OpenSearch-*' },
-    ( $MM_Version >= 6.48 ? ( MIN_PERL_VERSION => '5.8.3' ) : () ),
-    ( $MM_Version >= 6.31 ? ( LICENSE          => 'perl' )  : () ),
-    (   $MM_Version <= 6.44 ? ()
-        : ( META_MERGE => {
-                resources => {
-                    license  => 'http://dev.perl.org/licenses/',
-                    homepage => 'https://github.com/karpet/search-opensearch-perl',
-                    bugtracker =>
-                        'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Search-OpenSearch',
-                    repository =>
-                        'git://github.com/karpet/search-opensearch-perl.git',
-                },
-            }
-        )
-    ),
+    PL_FILES => {},
+    dist     => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean => { FILES => 'Search-OpenSearch-* ' },
 );
