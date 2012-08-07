@@ -10,7 +10,7 @@ use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
 
-our $VERSION = '0.16_01';
+our $VERSION = '0.17';
 
 my $XMLer = Search::Tools::XML->new;
 

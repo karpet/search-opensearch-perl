@@ -70,6 +70,7 @@ Revision history for Search-OpenSearch
         * add get_facets_cache_key() method to Engine
         * refactor Response->add_attribute() method
 
-0.17    xxx
+0.17    6 Aug 2012
         * add version() to Response and Engine classes.
         * add error() method to Response and Engine classes.
+        * switch to Module::Install
