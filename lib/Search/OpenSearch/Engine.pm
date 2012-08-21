@@ -36,7 +36,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -293,12 +293,26 @@ sub process_result {
     );
     for my $field (@$fields) {
         my $str = $XMLer->escape( $result->get_property($field) || '' );
-        $str =~ s/\003/ /g;
-        if ( !$apply_hilite or $self->no_hiliting($field) ) {
-            $res{$field} = $str;
+
+        if ( $self->array_field_values ) {
+            if ( !$apply_hilite or $self->no_hiliting($field) ) {
+                $res{$field} = [ split( m/\003/, $str ) ];
+            }
+            else {
+                $res{$field} = [
+                    map { $hiliter->light( $snipper->snip($_) ) }
+                        split( m/\003/, $str )
+                ];
+            }
         }
         else {
-            $res{$field} = $hiliter->light( $snipper->snip($str) );
+            $str =~ s/\003/ /g;
+            if ( !$apply_hilite or $self->no_hiliting($field) ) {
+                $res{$field} = $str;
+            }
+            else {
+                $res{$field} = $hiliter->light( $snipper->snip($str) );
+            }
         }
     }
     return \%res;
