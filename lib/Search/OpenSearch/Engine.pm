@@ -33,6 +33,7 @@ __PACKAGE__->mk_accessors(
         logger
         debug
         error
+        array_field_values
         )
 );
 
