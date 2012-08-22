@@ -7,16 +7,18 @@ name 'Search-OpenSearch';
 perl_version '5.8.3';
 all_from 'lib/Search/OpenSearch.pm';
 
-requires 'Test::More'         => 0;
-requires 'JSON'               => 0;
-requires 'Rose::ObjectX::CAF' => 0;
-requires 'Scalar::Util'       => 0;
-requires 'URI::Encode'        => 0;
-requires 'Data::Pageset'      => 0;
-requires 'Search::Tools'      => 0.78;
-requires 'CHI'                => 0;
-requires 'Data::UUID'         => 0;
-requires 'Sort::SQL'          => 0;
+requires 'Test::More'             => 0;
+requires 'JSON'                   => 0;
+requires 'Rose::ObjectX::CAF'     => 0;
+requires 'Scalar::Util'           => 0;
+requires 'URI::Encode'            => 0;
+requires 'Data::Pageset'          => 0;
+requires 'Search::Tools'          => 0.78;
+requires 'CHI'                    => 0;
+requires 'Data::UUID'             => 0;
+requires 'Sort::SQL'              => 0;
+requires 'DateTime'               => 0;
+requires 'DateTime::Format::Atom' => 0;
 
 license 'http://dev.perl.org/licenses/';
 homepage 'https://github.com/karpet/search-opensearch-perl';

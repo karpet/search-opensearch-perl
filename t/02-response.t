@@ -72,7 +72,7 @@ my $json_expected = {
     page_size    => 10,
     offset       => 0,
     sort_info    => undef,                                  #'score DESC',
-    version      => $Search::OpenSearch::Response::JSON::VERSION,
+    version => $Search::OpenSearch::Response::JSON::VERSION,
 };
 
 is_deeply( $json, $json_expected, "json structure" );
@@ -99,11 +99,20 @@ SKIP: {
     ok( delete $xml->{id},      "xml has id field" );
 
     my $xml_expected = {
-        "author"     => "Search::OpenSearch::Response::XML",
-        "build_time" => {},
-        "engine"     => {},
-        "facets"     => {},
-        "link"       => { href => "?format=XML&q=&p=10&o=0", rel => "self" },
+        "author"   => "Search::OpenSearch::Response::XML",
+        "category" => {
+            term => "sos",
+            sos  => {
+                build_time  => {},
+                engine      => {},
+                facets      => {},
+                search_time => {},
+                type        => "xml",
+                xmlns       => "http://dezi.org/sos/schema",
+            },
+            scheme => 'http://dezi.org/sos/schema',
+        },
+        "link" => { href => "?t=XML&q=&p=10&o=0", rel => "self" },
         "opensearch:itemsPerPage" => 10,
         "opensearch:Query"        => {
             role         => "request",
@@ -113,12 +122,10 @@ SKIP: {
         },
         "opensearch:startIndex"   => 0,
         "opensearch:totalResults" => 10,
-        "search_time"             => {},
         "title"                   => "OpenSearch Results",
         "xmlns"                   => "http://www.w3.org/2005/Atom",
         "xmlns:opensearch"        => "http://a9.com/-/spec/opensearch/1.1/",
     };
-
     is_deeply( $xml, $xml_expected, "xml structure" );
 
     #dump($xml);

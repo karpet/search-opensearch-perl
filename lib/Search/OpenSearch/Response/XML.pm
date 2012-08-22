@@ -9,10 +9,14 @@ use Encode;
 use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
+use DateTime;
+use DateTime::Format::Atom;
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 my $XMLer = Search::Tools::XML->new;
+
+my $AtomDT = DateTime::Format::Atom->new();
 
 my $header = <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
@@ -34,7 +38,7 @@ sub stringify {
     my $query_encoded = uri_encode($query) || "";
     my $this_uri
         = ( $self->link || '' )
-        . '?format=XML&q='
+        . '?t=XML&q='
         . $query_encoded . '&p='
         . ( $self->page_size || '' );
 
@@ -46,19 +50,15 @@ sub stringify {
     );
 
     my $feed = $XMLer->perl_to_xml(
-        {   title                     => $self->title,
-            author                    => $self->author,
-            updated                   => $now,
+        {   'title'                   => $self->title,
+            'author'                  => $self->author,
+            'updated'                 => $now,
             'opensearch:totalResults' => $self->total,
             'opensearch:startIndex'   => $self->offset,
             'opensearch:itemsPerPage' => $self->page_size,
             'id' =>
                 $UUID_maker->create_from_name_str( NameSpace_URL, $self_link,
                 ),
-            'facets'      => $self->facets,
-            'search_time' => $self->search_time,
-            'build_time'  => $self->build_time,
-            engine        => $self->engine,
         },
         'feed', 1
     );
@@ -73,6 +73,30 @@ sub stringify {
             startIndex   => $self->offset,
         }
     );
+
+    # our microformat meta
+    $feed .= $XMLer->start_tag(
+        'category',
+        {   term   => 'sos',
+            scheme => 'http://dezi.org/sos/schema',
+        }
+    );
+
+    $feed .= $XMLer->perl_to_xml(
+        {   'facets'      => $self->facets,
+            'search_time' => $self->search_time,
+            'build_time'  => $self->build_time,
+            'engine'      => $self->engine,
+        },
+        {   tag   => 'sos',
+            attrs => {
+                xmlns => 'http://dezi.org/sos/schema',
+                type  => 'xml'
+            }
+        },
+    );
+
+    $feed .= $XMLer->end_tag('category');
 
     # main link
     my $link = $XMLer->singleton( 'link', { href => $self->link } );
@@ -143,20 +167,38 @@ sub _build_entries {
     my $results = $self->results;
     my @entries;
 
-    #my $UUID_maker = Data::UUID->new;
+# override with some required Atom fields
+# http://www.opensearch.org/Documentation/Recommendations/OpenSearch_and_microformats#Responses
+# only 'summary' gets shown to users
+# but 'content' can be parsed for microformat markup
 
     for my $result (@$results) {
-        my $entry = $XMLer->perl_to_xml(
-            {   title   => $result->{title},
-                content => $result->{summary},
-                id      => $result->{uri},       # or uuid?
-            },
-            'entry',
-            1,
-            1
+
+        my $uri = delete $result->{uri};
+        my $r   = {
+            title   => delete $result->{title},
+            summary => delete $result->{summary},
+            updated => $AtomDT->format_datetime(
+                DateTime->from_epoch( epoch => delete $result->{mtime} )
+            ),
+            id => $uri,    # or uuid?
+        };
+
+        my $entry = $XMLer->perl_to_xml( $r, 'entry', 1, 1 );
+        my $link = $XMLer->singleton( 'link', { href => $uri } );
+
+        my $micro
+            = $XMLer->start_tag( 'content', { type => 'application/xml' } );
+        $micro .= $XMLer->perl_to_xml(
+            $result,
+            {   tag   => 'fields',
+                attrs => { xmlns => 'http://dezi.org/sos/schema' },
+            }
         );
-        my $link = $XMLer->singleton( 'link', { href => $result->{uri} } );
-        $entry =~ s,</entry>,$link</entry>,;
+        $micro .= $XMLer->end_tag('content');
+
+        # insert into string
+        $entry =~ s,</entry>,${micro}${link}</entry>,;
         push @entries, $entry,;
     }
     return @entries;
