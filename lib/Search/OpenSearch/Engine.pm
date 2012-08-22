@@ -573,6 +573,11 @@ Returns default response format. Defaults to 'XML'.
 
 Get/set the error value for the Engine. 
 
+=head2 array_field_values([boolean])
+
+Return all non-default field values as array refs rather than strings.
+This supports the multi-value \003 separator used by L<SWISH::3>.
+
 =head1 AUTHOR
 
 Peter Karman, C<< <karman at cpan.org> >>
