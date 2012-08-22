@@ -176,8 +176,8 @@ sub _build_entries {
         my $r   = {
             title   => delete $result->{title},
             summary => delete $result->{summary},
-            updated => strftime( $AtomDT, delete $result->{mtime} ),
-            id      => $uri,                                        # or uuid?
+            updated => strftime( $AtomDT, gmtime( delete $result->{mtime} ) ),
+            id => $uri,    # or uuid?
         };
 
         my $entry = $XMLer->perl_to_xml( $r, 'entry', 1, 1 );
