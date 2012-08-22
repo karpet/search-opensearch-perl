@@ -17,8 +17,6 @@ requires 'Search::Tools'          => 0.78;
 requires 'CHI'                    => 0;
 requires 'Data::UUID'             => 0;
 requires 'Sort::SQL'              => 0;
-requires 'DateTime'               => 0;
-requires 'DateTime::Format::Atom' => 0;
 
 license 'http://dev.perl.org/licenses/';
 homepage 'https://github.com/karpet/search-opensearch-perl';

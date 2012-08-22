@@ -9,14 +9,12 @@ use Encode;
 use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
-use DateTime;
-use DateTime::Format::Atom;
 
 our $VERSION = '0.19';
 
 my $XMLer = Search::Tools::XML->new;
 
-my $AtomDT = DateTime::Format::Atom->new();
+my $AtomDT = '%Y-%m-%dT%H:%M:%SZ';
 
 my $header = <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,7 +29,7 @@ sub stringify {
     my $UUID_maker = Data::UUID->new;
     my @entries    = $self->_build_entries;
 
-    my $now = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
+    my $now = strftime $AtomDT, gmtime;
     my $query = $self->query;
     $query = "" unless defined $query;
 
@@ -178,10 +176,8 @@ sub _build_entries {
         my $r   = {
             title   => delete $result->{title},
             summary => delete $result->{summary},
-            updated => $AtomDT->format_datetime(
-                DateTime->from_epoch( epoch => delete $result->{mtime} )
-            ),
-            id => $uri,    # or uuid?
+            updated => strftime( $AtomDT, delete $result->{mtime} ),
+            id      => $uri,                                        # or uuid?
         };
 
         my $entry = $XMLer->perl_to_xml( $r, 'entry', 1, 1 );
