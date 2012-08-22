@@ -75,6 +75,6 @@ Revision history for Search-OpenSearch
         * add error() method to Response and Engine classes.
         * switch to Module::Install
 
-0.18    xxx
+0.18    21 Aug 2012
         * add array_field_values option to Engine
 
