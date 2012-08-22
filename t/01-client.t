@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 use strict;
 use warnings;
 use Test::More tests => 2;
@@ -14,12 +16,14 @@ SKIP:
         skip "WWW::OpenSearch required for client checks", 2;
     }
     if ( !$ENV{PLACK_TEST} ) {
-        skip "set PLACK_TEST and make sure plack server is running", 2;
+        skip
+            "set PLACK_TEST=1 and verify server is running on localhost:5000",
+            2;
     }
 
     require WWW::OpenSearch::Url;
     my $os_url = WWW::OpenSearch::Url->new(
-        template => "http://localhost:5000/search?format=XML&q=test",
+        template => "http://localhost:5000/search?t=XML&q=test",
         method   => 'GET',
         ns       => 'http://a9.com/-/spec/opensearch/1.1/',     #'opensearch',
     );
