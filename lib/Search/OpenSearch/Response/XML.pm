@@ -189,7 +189,8 @@ sub _build_entries {
             $result,
             {   tag   => 'fields',
                 attrs => { xmlns => 'http://dezi.org/sos/schema' },
-            }
+            },
+            0, 1,
         );
         $micro .= $XMLer->end_tag('content');
 
