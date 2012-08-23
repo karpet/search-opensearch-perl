@@ -78,7 +78,7 @@ Revision history for Search-OpenSearch
 0.18    21 Aug 2012
         * add array_field_values option to Engine
 
-0.19    xxx
+0.19    22 Aug 2012
         * change XML response format to more closely align with OpenSearch (Atom) spec,
           particularly for SOS-specific metadata
 
