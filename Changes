@@ -82,3 +82,7 @@ Revision history for Search-OpenSearch
         * change XML response format to more closely align with OpenSearch (Atom) spec,
           particularly for SOS-specific metadata
 
+0.20    xxx
+        * move XML-escaping of field values *after* snipping is performed, in case the
+          Snipper breaks the markup. Most noticeable with quote and apos entities.
+

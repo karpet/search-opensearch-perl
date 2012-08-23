@@ -37,7 +37,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -271,8 +271,10 @@ sub process_result {
     my $fields       = $args{fields};
     my $apply_hilite = $args{apply_hilite};
 
-    my $title   = $XMLer->escape( $result->title   || '' );
-    my $summary = $XMLer->escape( $result->summary || '' );
+    my $title = $XMLer->escape( $result->title || '' );
+
+    # escape the summary *after* we snip it
+    my $summary = $result->summary || '';
 
     # \003 is the record-delimiter in Swish3
     # the default behaviour is just to ignore it
@@ -288,20 +290,24 @@ sub process_result {
         title   => ( $apply_hilite ? $hiliter->light($title) : $title ),
         summary => (
               $apply_hilite
-            ? $hiliter->light( $snipper->snip($summary) )
-            : $summary
+            ? $hiliter->light( $XMLer->escape( $snipper->snip($summary) ) )
+            : $XMLer->escape($summary)
         ),
     );
     for my $field (@$fields) {
-        my $str = $XMLer->escape( $result->get_property($field) || '' );
+        my $str = $result->get_property($field) || '';
 
         if ( $self->array_field_values ) {
             if ( !$apply_hilite or $self->no_hiliting($field) ) {
-                $res{$field} = [ split( m/\003/, $str ) ];
+                $res{$field}
+                    = [ map { $XMLer->escape($_) } split( m/\003/, $str ) ];
             }
             else {
                 $res{$field} = [
-                    map { $hiliter->light( $snipper->snip($_) ) }
+                    map {
+                        $hiliter->light(
+                            $XMLer->escape( $snipper->snip($_) ) )
+                        }
                         split( m/\003/, $str )
                 ];
             }
@@ -309,10 +315,11 @@ sub process_result {
         else {
             $str =~ s/\003/ /g;
             if ( !$apply_hilite or $self->no_hiliting($field) ) {
-                $res{$field} = $str;
+                $res{$field} = $XMLer->escape($str);
             }
             else {
-                $res{$field} = $hiliter->light( $snipper->snip($str) );
+                $res{$field} = $hiliter->light(
+                    $XMLer->escape( $snipper->snip($str) ) );
             }
         }
     }
