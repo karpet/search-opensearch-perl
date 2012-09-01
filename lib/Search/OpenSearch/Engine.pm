@@ -81,8 +81,8 @@ sub init_searcher { croak "$_[0] does not implement init_searcher()" }
 sub type          { croak "$_[0] does not implement type()" }
 sub has_rest_api  {0}
 
-sub get_allowed_rest_methods {
-    croak "$_[0] does not implement get_allowed_rest_methods";
+sub get_allowed_http_methods {
+    croak "$_[0] does not implement get_allowed_http_methods";
 }
 sub init_default_response_format {'XML'}
 
@@ -572,10 +572,10 @@ documents in the index.
 
 Default is false.
 
-=head2 get_allowed_rest_methods
+=head2 get_allowed_http_methods
 
 Override this method in a subclass in order to indicate the
-supported REST methods. Assumes has_rest_api() is true.
+supported HTTP methods. Assumes has_rest_api() is true.
 
 =head2 debug([boolean])
 

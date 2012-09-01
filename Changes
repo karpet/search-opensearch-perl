@@ -85,4 +85,4 @@ Revision history for Search-OpenSearch
 0.20    xxx
         * move XML-escaping of field values *after* snipping is performed, in case the
           Snipper breaks the markup. Most noticeable with quote and apos entities.
-        * add Engine->get_allowed_rest_methods method
+        * add Engine->get_allowed_http_methods method
