@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 14;
 use JSON;
 use Data::Dump qw( dump );
 use Search::Tools::XML;
@@ -9,6 +9,10 @@ use Search::Tools::XML;
 use Search::OpenSearch::Response::ExtJS;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
+use Search::OpenSearch::Response::Tiny;
+
+#######################################################################
+## ExtJS
 
 ok( my $extjs_response = Search::OpenSearch::Response::ExtJS->new(
         sort_info => 'score DESC',
@@ -50,6 +54,9 @@ is_deeply( $extjs, $extjs_expected, "extjs structure" );
 #diag($extjs_response);
 #diag( dump $extjs );
 
+#####################################################################
+## JSON
+
 ok( my $json_response = Search::OpenSearch::Response::JSON->new(),
     "new Response::JSON object" );
 
@@ -80,7 +87,28 @@ is_deeply( $json, $json_expected, "json structure" );
 #diag($json_response);
 #diag( dump $json );
 
-#diag( dump \%Search::OpenSearch::Response::ATTRIBUTES );
+#####################################################################
+## Tiny
+
+ok( my $tiny_response = Search::OpenSearch::Response::Tiny->new(),
+    "new Response::Tiny object" );
+
+ok( my $tiny_json = decode_json("$tiny_response"), "decode Tiny JSON" );
+
+my $tiny_expected = {
+    facets  => undef,
+    results => undef,
+    total   => undef,
+    version => $Search::OpenSearch::Response::Tiny::VERSION,
+};
+
+is_deeply( $tiny_json, $tiny_expected, "json structure" );
+
+#diag($tiny_response);
+#diag( dump $tiny_json );
+
+#####################################################################
+## XML
 
 SKIP: {
 

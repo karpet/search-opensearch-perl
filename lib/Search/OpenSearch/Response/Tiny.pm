@@ -1,24 +1,35 @@
-package Search::OpenSearch::Response::JSON;
+package Search::OpenSearch::Response::Tiny;
 use strict;
 use warnings;
 use Carp;
-use base qw( Search::OpenSearch::Response );
+use base qw( Search::OpenSearch::Response::JSON );
 use JSON;
 
 our $VERSION = '0.21';
+
+my %tiny_fields = map { $_ => 1 } qw(
+    total
+    facets
+    results
+    version
+);
 
 sub stringify {
     my $self = shift;
 
     my $resp = $self->as_hash;
-    
+
+    # delete everything but a select "min"imum
+    for my $k ( keys %$resp ) {
+        next if exists $tiny_fields{$k};
+        delete $resp->{$k};
+    }
+
     # in devel mode use pretty()
     return $self->debug
         ? JSON->new->utf8->pretty(1)->encode($resp)
         : encode_json($resp);
 }
-
-sub content_type { return 'application/json' }
 
 1;
 
@@ -26,13 +37,13 @@ __END__
 
 =head1 NAME
 
-Search::OpenSearch::Response::JSON - provide search results in JSON format
+Search::OpenSearch::Response::Tiny - provide minimal search results in JSON format
 
 =head1 SYNOPSIS
 
  use Search::OpenSearch;
  my $engine = Search::OpenSearch->engine(
-    type    => 'KSx',
+    type    => 'Lucy',
     index   => [qw( path/to/index1 path/to/index2 )],
     facets  => {
         names       => [qw( color size flavor )],
@@ -41,43 +52,43 @@ Search::OpenSearch::Response::JSON - provide search results in JSON format
     fields  => [qw( color size flavor )],
  );
  my $response = $engine->search(
-    q           => 'quick brown fox',   # query
-    s           => 'rank desc',         # sort order
-    o           => 0,                   # offset
-    p           => 25,                  # page size
-    h           => 1,                   # highlight query terms in results
-    c           => 0,                   # return count stats only (no results)
-    L           => 'field|low|high',    # limit results to inclusive range
-    f           => 1,                   # include facets
-    r           => 1,                   # include results
-    format      => 'JSON',              # or XML
+    q   => 'quick brown fox',   # query
+    s   => 'rank desc',         # sort order
+    o   => 0,                   # offset
+    p   => 25,                  # page size
+    h   => 1,                   # highlight query terms in results
+    c   => 0,                   # return count stats only (no results)
+    L   => 'field|low|high',    # limit results to inclusive range
+    f   => 1,                   # include facets
+    r   => 1,                   # include results
+    t   => 'Tiny',              # or JSON, XML, ExtJS
+    x   => [qw( foo bar )],     # return only a subset of fields
  );
  print $response;
 
 =head1 DESCRIPTION
 
-Search::OpenSearch::Response::JSON serializes to JSON.
+Search::OpenSearch::Response::Tiny serializes to a minimal
+JSON string. The only keys present will be:
 
-The OpenSearch specification is for XML, but some alternative JSON
-formats are defined at http://www.opensearch.org/Community/JSON_Formats.
+ results
+ facets
+ total
+ version
 
-This class follows none of the examples exactly, but is fairly close
-to the NYTimes format.
+Use the Tiny format with the B<x> parameter to the Engine to create
+a minimal response size.
 
 =head1 METHODS
 
-This class is a subclass of Search::OpenSearch::Response. 
+This class is a subclass of Search::OpenSearch::Response::JSON. 
 Only new or overridden methods are documented here.
 
 =head2 stringify
 
-Returns the Response in JSON format.
+Returns the Response in minimal JSON format.
 
 Response objects are overloaded to call stringify().
-
-=head2 content_type
-
-Returns appropriate MIME type for the format returned by stringify().
 
 =head1 AUTHOR
 
@@ -120,7 +131,7 @@ L<http://search.cpan.org/dist/Search-OpenSearch/>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2010 Peter Karman.
+Copyright 2012 Peter Karman.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

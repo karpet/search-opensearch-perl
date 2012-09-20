@@ -8,6 +8,7 @@ use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
 use Search::OpenSearch::Response::ExtJS;
+use Search::OpenSearch::Response::Tiny;
 use Search::Tools::XML;
 use Search::Tools;
 use CHI;
@@ -37,7 +38,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -104,6 +105,7 @@ sub search {
     $include_results = 1 unless defined $include_results;
     my $include_facets = $args{'f'};
     $include_facets = 1 unless defined $include_facets;
+    my $response_fields = $args{'x'} || $self->fields;
 
     if ( $self->debug and $self->logger ) {
         $self->logger->log( dump( \%args ) );
@@ -167,20 +169,21 @@ sub search {
         $self->logger->log(
             "include_results=$include_results include_facets=$include_facets count_only=$count_only"
         );
+        $self->logger->log( "response_fields=" . dump($response_fields) );
     }
 
     if ( $include_results && !$count_only ) {
-        $response->fields( $self->fields );
+        $response->fields($response_fields);
         $response->offset($offset);
         $response->page_size($page_size);
         $response->results(
             $self->build_results(
-                fields       => $self->fields,
+                fields       => $response_fields,
                 results      => $results,
                 page_size    => $page_size,
                 apply_hilite => $apply_hilite,
                 query        => $query,
-                args         => \%args,          # original args
+                args         => \%args,             # original args
             )
         );
     }
@@ -374,18 +377,19 @@ Search::OpenSearch::Engine - abstract base class
     
  );
  my $response = $engine->search(
-    q           => 'quick brown fox',   # query
-    s           => 'rank desc',         # sort order
-    o           => 0,                   # offset
-    p           => 25,                  # page size
-    h           => 1,                   # highlight query terms in results
-    c           => 0,                   # count total only (same as f=0 r=0)
-    L           => 'field|low|high',    # limit results to inclusive range
-    f           => 1,                   # include facets
-    r           => 1,                   # include results
-    t           => 'XML',               # or JSON
-    u           => 'http://yourdomain.foo/opensearch/',
-    b           => 'AND',               # or OR
+    q   => 'quick brown fox',   # query
+    s   => 'rank desc',         # sort order
+    o   => 0,                   # offset
+    p   => 25,                  # page size
+    h   => 1,                   # highlight query terms in results
+    c   => 0,                   # count total only (same as f=0 r=0)
+    L   => 'field|low|high',    # limit results to inclusive range
+    f   => 1,                   # include facets
+    r   => 1,                   # include results
+    t   => 'XML',               # or JSON
+    u   => 'http://yourdomain.foo/opensearch/',
+    b   => 'AND',               # or OR
+    x   => [qw( foo bar )],     # return only a subset of fields
  );
  print $response;
 

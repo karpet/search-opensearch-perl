@@ -10,6 +10,7 @@ lib/Search/OpenSearch/Facets.pm
 lib/Search/OpenSearch/Response.pm
 lib/Search/OpenSearch/Response/ExtJS.pm
 lib/Search/OpenSearch/Response/JSON.pm
+lib/Search/OpenSearch/Response/Tiny.pm
 lib/Search/OpenSearch/Response/XML.pm
 Makefile.PL
 MANIFEST

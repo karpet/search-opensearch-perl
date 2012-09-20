@@ -6,7 +6,7 @@ use base qw( Search::OpenSearch::Response::JSON );
 use JSON;
 use Sort::SQL;
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 
 __PACKAGE__->add_attribute('metaData');
 __PACKAGE__->add_attribute('success');
@@ -70,16 +70,16 @@ Search::OpenSearch::Response::ExtJS - provide search results in JSON format for 
     fields  => [qw( color size flavor )],
  );
  my $response = $engine->search(
-    q           => 'quick brown fox',   # query
-    s           => 'rank desc',         # sort order
-    o           => 0,                   # offset
-    p           => 25,                  # page size
-    h           => 1,                   # highlight query terms in results
-    c           => 0,                   # return count stats only (no results)
-    L           => 'field|low|high',    # limit results to inclusive range
-    f           => 1,                   # include facets
-    r           => 1,                   # include results
-    format      => 'ExtJS',             # or JSON, XML
+    q  => 'quick brown fox',   # query
+    s  => 'rank desc',         # sort order
+    o  => 0,                   # offset
+    p  => 25,                  # page size
+    h  => 1,                   # highlight query terms in results
+    c  => 0,                   # return count stats only (no results)
+    L  => 'field|low|high',    # limit results to inclusive range
+    f  => 1,                   # include facets
+    r  => 1,                   # include results
+    t  => 'ExtJS',             # or JSON, XML
  );
  print $response;
 
@@ -90,7 +90,7 @@ for the ExtJS Javascript library.
 
 =head1 METHODS
 
-This class is a subclass of Search::OpenSearch::Response. 
+This class is a subclass of Search::OpenSearch::Response::JSON. 
 Only new or overridden methods are documented here.
 
 =head2 stringify

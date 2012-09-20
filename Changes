@@ -86,3 +86,8 @@ Revision history for Search-OpenSearch
         * move XML-escaping of field values *after* snipping is performed, in case the
           Snipper breaks the markup. Most noticeable with quote and apos entities.
         * add Engine->get_allowed_http_methods method
+
+0.21    19 Sept 2012
+        * add Tiny Response class
+        * add 'x' param support for returning a subset of an Engine's field values,
+          per request.
