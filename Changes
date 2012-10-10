@@ -92,7 +92,7 @@ Revision history for Search-OpenSearch
         * add 'x' param support for returning a subset of an Engine's field values,
           per request.
 
-0.22    xxx
+0.22    10 Oct 2012
         * debug param now passed from Engine to Response
         * charset encoding UTF-8 now passed explicitly in Response->content_type for JSON
           and XML.
