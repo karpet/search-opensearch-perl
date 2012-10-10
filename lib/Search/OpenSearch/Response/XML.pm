@@ -201,7 +201,7 @@ sub _build_entries {
     return @entries;
 }
 
-sub content_type { return 'application/xml' }
+sub content_type { return 'application/xml; charset=utf-8' }
 
 1;
 

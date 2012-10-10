@@ -94,3 +94,6 @@ Revision history for Search-OpenSearch
 
 0.22    xxx
         * debug param now passed from Engine to Response
+        * charset encoding UTF-8 now passed explicitly in Response->content_type for JSON
+          and XML.
+
