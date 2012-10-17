@@ -10,7 +10,7 @@ use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 my $XMLer = Search::Tools::XML->new;
 
@@ -201,7 +201,7 @@ sub _build_entries {
     return @entries;
 }
 
-sub content_type { return 'application/xml' }
+sub content_type { return 'application/xml; charset=utf-8' }
 
 1;
 

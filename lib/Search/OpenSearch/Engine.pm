@@ -38,7 +38,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -156,6 +156,7 @@ sub search {
         $self->logger->log( dump $query_tree );
     }
     my $response = $response_class->new(
+        debug        => $self->debug,
         total        => $results->hits,
         json_query   => encode_json($query_tree),
         parsed_query => $res_query->stringify,

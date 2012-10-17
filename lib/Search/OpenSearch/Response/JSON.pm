@@ -5,7 +5,7 @@ use Carp;
 use base qw( Search::OpenSearch::Response );
 use JSON;
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 sub stringify {
     my $self = shift;
@@ -18,7 +18,7 @@ sub stringify {
         : encode_json($resp);
 }
 
-sub content_type { return 'application/json' }
+sub content_type { return 'application/json; charset=utf-8' }
 
 1;
 
