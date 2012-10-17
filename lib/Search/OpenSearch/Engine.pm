@@ -338,6 +338,26 @@ sub no_hiliting {
     return $self->{do_not_hilite}->{$field};
 }
 
+sub suggest {
+    my $self = shift;
+    my $q = shift;
+    croak "q required" unless defined $q;
+    
+    my $searcher = $self->searcher or croak "searcher not defined";
+    my $results = $searcher->search(
+        $query,
+        {   start          => $offset,
+            max            => $page_size,
+            order          => $sort_by,
+            limit          => \@limits,
+            default_boolop => $boolop,
+        }
+    );
+    
+    
+    
+}
+
 1;
 
 __END__
@@ -370,7 +390,7 @@ Search::OpenSearch::Engine - abstract base class
         root_dir         => "/tmp/opensearch_cache",
     ),
     cache_ttl       => 3600,
-    do_not_hilite   => [qw( color )],
+    do_not_hilite   => { color => 1 },
     snipper_config  => { as_sentences => 1 },        # see Search::Tools::Snipper
     hiliter_config  => { class => 'h', tag => 'b' }, # see Search::Tools::HiLiter
     parser_config   => {},                           # see Search::Query::Parser
