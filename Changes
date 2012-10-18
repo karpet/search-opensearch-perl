@@ -97,3 +97,5 @@ Revision history for Search-OpenSearch
         * charset encoding UTF-8 now passed explicitly in Response->content_type for JSON
           and XML.
 
+0.23    17 Oct 2012
+        * add suggester() method to Engine and suggestions() to Response

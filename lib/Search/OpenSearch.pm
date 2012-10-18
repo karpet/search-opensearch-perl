@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 
 sub engine {
     my $class = shift;

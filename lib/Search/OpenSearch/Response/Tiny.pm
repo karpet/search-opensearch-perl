@@ -5,12 +5,13 @@ use Carp;
 use base qw( Search::OpenSearch::Response::JSON );
 use JSON;
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 
 my %tiny_fields = map { $_ => 1 } qw(
     total
     facets
     results
+    suggestions
     version
 );
 

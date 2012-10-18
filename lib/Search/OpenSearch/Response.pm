@@ -27,10 +27,11 @@ my @attributes = qw(
     build_time
     sort_info
     version
+    suggestions
 );
 __PACKAGE__->mk_accessors( @attributes, qw( debug pps error ) );
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 
 our %ATTRIBUTES = ();
 
@@ -198,6 +199,8 @@ Pages-per-section. Used by Data::Pageset. Default is "10".
 =item sort_info
 
 =item version
+
+=item suggestions
 
 =back
 

@@ -44,6 +44,7 @@ my $extjs_expected = {
     results      => undef,
     search_time  => undef,
     success      => 1,
+    suggestions  => undef,
     title        => "OpenSearch Results",
     total        => undef,
     version      => $Search::OpenSearch::Response::ExtJS::VERSION,
@@ -74,6 +75,7 @@ my $json_expected = {
     query        => undef,
     results      => undef,
     search_time  => undef,
+    suggestions  => undef,
     title        => "OpenSearch Results",
     total        => undef,
     page_size    => 10,
@@ -96,10 +98,11 @@ ok( my $tiny_response = Search::OpenSearch::Response::Tiny->new(),
 ok( my $tiny_json = decode_json("$tiny_response"), "decode Tiny JSON" );
 
 my $tiny_expected = {
-    facets  => undef,
-    results => undef,
-    total   => undef,
-    version => $Search::OpenSearch::Response::Tiny::VERSION,
+    facets      => undef,
+    results     => undef,
+    suggestions => undef,
+    total       => undef,
+    version     => $Search::OpenSearch::Response::Tiny::VERSION,
 };
 
 is_deeply( $tiny_json, $tiny_expected, "json structure" );
@@ -135,6 +138,7 @@ SKIP: {
                 engine      => {},
                 facets      => {},
                 search_time => {},
+                suggestions => {},
                 type        => "xml",
                 xmlns       => "http://dezi.org/sos/schema",
             },

@@ -31,6 +31,7 @@ __PACKAGE__->mk_accessors(
         parser_config
         indexer_config
         searcher_config
+        suggester_config
         logger
         debug
         error
@@ -38,10 +39,11 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
+    'scalar --get_set_init' => 'suggester',
     'scalar --get_set_init' => 'default_response_format',
 );
 
@@ -68,13 +70,14 @@ sub init {
             root_dir         => "/tmp/opensearch_cache",
         );
     }
-    $self->{cache_ttl}       ||= 60 * 60 * 1;                    # 1 hour
-    $self->{do_not_hilite}   ||= {};
-    $self->{snipper_config}  ||= { as_sentences => 1 };
-    $self->{hiliter_config}  ||= { class => 'h', tag => 'b' };
-    $self->{parser_config}   ||= {};
-    $self->{indexer_config}  ||= {};
-    $self->{searcher_config} ||= {};
+    $self->{cache_ttl}        ||= 60 * 60 * 1;                    # 1 hour
+    $self->{do_not_hilite}    ||= {};
+    $self->{snipper_config}   ||= { as_sentences => 1 };
+    $self->{hiliter_config}   ||= { class => 'h', tag => 'b' };
+    $self->{parser_config}    ||= {};
+    $self->{indexer_config}   ||= {};
+    $self->{searcher_config}  ||= {};
+    $self->{suggester_config} ||= {};
 
     return $self;
 }
@@ -111,7 +114,7 @@ sub search {
         $self->logger->log( dump( \%args ) );
     }
 
-    my $format 
+    my $format
         = $args{'t'}
         || $args{'format'}
         || $self->default_response_format;
@@ -166,6 +169,9 @@ sub search {
         engine       => blessed($self) . ' ' . $self->version(),
         sort_info    => $sort_by,
     );
+    if ( $self->suggester ) {
+        $response->suggestions( $self->suggester->suggest("$query") );
+    }
     if ( $self->debug and $self->logger ) {
         $self->logger->log(
             "include_results=$include_results include_facets=$include_facets count_only=$count_only"
@@ -339,26 +345,6 @@ sub no_hiliting {
     return $self->{do_not_hilite}->{$field};
 }
 
-sub suggest {
-    my $self = shift;
-    my $q = shift;
-    croak "q required" unless defined $q;
-    
-    my $searcher = $self->searcher or croak "searcher not defined";
-    my $results = $searcher->search(
-        $query,
-        {   start          => $offset,
-            max            => $page_size,
-            order          => $sort_by,
-            limit          => \@limits,
-            default_boolop => $boolop,
-        }
-    );
-    
-    
-    
-}
-
 1;
 
 __END__
@@ -382,6 +368,9 @@ Search::OpenSearch::Engine - abstract base class
     },
     searcher_config => {
         anotherkey => anothervalue,
+    },
+    suggester_config => {
+        akey => avalue,
     },
     cache_ok        => 1,
     cache           => CHI->new(
@@ -438,6 +427,14 @@ Subclasses must implement this method. If the Searcher object
 acts like a SWISH::Prog::Searcher, then search() will Just Work.
 Otherwise, your Engine subclass should likely override search() as well.
 
+=head2 init_suggester
+
+Subclasses may implement this method. It should return an 
+object that acts like L<LucyX::Suggester>: it should
+have a method called suggest() which expects a query string
+and returns an array ref of strings which will
+be included in the Response under the B<suggestions> key.
+
 =head2 search( I<args> )
 
 See the SYNOPSIS.
@@ -462,6 +459,10 @@ is intented to be used in init_searcher().
 =head2 searcher
 
 The value returned by init_searcher().
+
+=head2 suggester
+
+The value returned by init_suggester().
 
 =head2 fields
 
@@ -577,6 +578,11 @@ a REST API. Typically passed as param in new().
 
 Get/set the hash ref available to subclasses in init_searcher().
 Typically passed as param in new().
+
+=head2 suggester_config
+
+Get/set the hash ref available to subclasses that implement
+init_suggester(). Typically passed as param in new().
 
 =head2 no_hiliting( I<field_name> )
 
