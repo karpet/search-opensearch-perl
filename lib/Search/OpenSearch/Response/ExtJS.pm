@@ -6,7 +6,7 @@ use base qw( Search::OpenSearch::Response::JSON );
 use JSON;
 use Sort::SQL;
 
-our $VERSION = '0.23';
+our $VERSION = '0.24';
 
 __PACKAGE__->add_attribute('metaData');
 __PACKAGE__->add_attribute('success');
