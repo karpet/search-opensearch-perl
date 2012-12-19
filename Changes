@@ -100,5 +100,5 @@ Revision history for Search-OpenSearch
 0.23    17 Oct 2012
         * add suggester() method to Engine and suggestions() to Response
 
-0.24    xxx
+0.24    18 Dec 2012
         * add Engine->response_version
