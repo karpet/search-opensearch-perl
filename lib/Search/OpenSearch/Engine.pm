@@ -40,7 +40,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -71,12 +71,12 @@ sub init {
             root_dir         => "/tmp/opensearch_cache",
         );
     }
-    $self->{cache_ttl}        ||= 60 * 60 * 1;                    # 1 hour
-    $self->{do_not_hilite}    ||= {};
-    $self->{snipper_config}   ||= { as_sentences => 1 };
-    $self->{hiliter_config}   ||= { class => 'h', tag => 'b' };
-    $self->{parser_config}    ||= {};
-    $self->{indexer_config}   ||= {};
+    $self->{cache_ttl}     ||= 60 * 60 * 1;    # 1 hour
+    $self->{do_not_hilite} ||= {};
+    $self->{snipper_config} ||= { as_sentences => 1, strip_markup => 1 };
+    $self->{hiliter_config} ||= { class => 'h', tag => 'b' };
+    $self->{parser_config}  ||= {};
+    $self->{indexer_config} ||= {};
     $self->{searcher_config}  ||= {};
     $self->{suggester_config} ||= {};
 

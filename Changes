@@ -102,3 +102,6 @@ Revision history for Search-OpenSearch
 
 0.24    18 Dec 2012
         * add Engine->response_version
+
+0.25    xxx
+        * add strip_markup => 1 to default snipper_config

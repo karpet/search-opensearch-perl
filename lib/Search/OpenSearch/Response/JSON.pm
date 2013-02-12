@@ -5,7 +5,7 @@ use Carp;
 use base qw( Search::OpenSearch::Response );
 use JSON;
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 sub stringify {
     my $self = shift;
