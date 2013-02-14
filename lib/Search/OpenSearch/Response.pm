@@ -31,7 +31,7 @@ my @attributes = qw(
 );
 __PACKAGE__->mk_accessors( @attributes, qw( debug pps error ) );
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 our %ATTRIBUTES = ();
 
