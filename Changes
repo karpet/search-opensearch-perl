@@ -106,5 +106,5 @@ Revision history for Search-OpenSearch
 0.25    12 Feb 2013
         * add strip_markup => 1 to default snipper_config
 
-0.26    xxx
+0.26    28 Feb 2013
         * bump Search::Tools dependency to skip over 0.89 S::T bug.
