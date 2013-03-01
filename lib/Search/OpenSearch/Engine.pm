@@ -40,7 +40,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
