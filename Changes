@@ -108,3 +108,7 @@ Revision history for Search-OpenSearch
 
 0.26    28 Feb 2013
         * bump Search::Tools dependency to skip over 0.89 S::T bug.
+
+0.27    4 March 2013
+        * add init_cache_key_seed() method
+

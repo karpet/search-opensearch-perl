@@ -40,11 +40,12 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
     'scalar --get_set_init' => 'suggester',
+    'scalar --get_set_init' => 'cache_key_seed',
     'scalar --get_set_init' => 'default_response_format',
 );
 
@@ -90,6 +91,7 @@ sub get_allowed_http_methods {
     croak "$_[0] does not implement get_allowed_http_methods";
 }
 sub init_default_response_format {'XML'}
+sub init_cache_key_seed          {'search-opensearch-engine'}
 
 sub search {
     my $self  = shift;
@@ -214,7 +216,7 @@ sub set_limit {
 sub get_facets_cache_key {
     my $self = shift;
     my ( $query, $args ) = @_;
-    return ref($self) . $query;
+    return sprintf( "%s.%s.%s", $self->cache_key_seed(), ref($self), $query );
 }
 
 sub get_facets {
@@ -544,6 +546,12 @@ automatic creation is turned off.
 
 Get/set the internal CHI object. Defaults to the File driver.
 Typically passed as param in new().
+
+=head2 init_cache_key_seed
+
+The string used in get_facets_cache_key() to construct
+the key for caching facets. You can set in new() with 'cache_key_seed'
+or override in a base class.
 
 =head2 cache_ttl
 
