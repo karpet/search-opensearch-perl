@@ -188,10 +188,13 @@ sub _build_entries {
             = $XMLer->start_tag( 'content', { type => 'application/xml' } );
         $micro .= $XMLer->perl_to_xml(
             $result,
-            {   tag   => 'fields',
-                attrs => { xmlns => 'http://dezi.org/sos/schema' },
+            {   root => {
+                    tag   => 'fields',
+                    attrs => { xmlns => 'http://dezi.org/sos/schema' },
+                },
+                escape       => 0,
+                strip_plural => 0
             },
-            0, 1,
         );
         $micro .= $XMLer->end_tag('content');
 
