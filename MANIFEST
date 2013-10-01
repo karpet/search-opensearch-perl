@@ -15,8 +15,6 @@ lib/Search/OpenSearch/Response/XML.pm
 Makefile.PL
 MANIFEST
 META.yml
-MYMETA.json
-MYMETA.yml
 README
 t/00-load.t
 t/01-client.t
