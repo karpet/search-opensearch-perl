@@ -167,7 +167,7 @@ sub search {
         total        => $results->hits,
         json_query   => encode_json($query_tree),
         parsed_query => $res_query->stringify,
-        query        => $query,
+        query        => to_utf8($query),
         search_time  => $search_time,
         link         => ( $args{'u'} || $args{'link'} || $self->link ),
         version => ( $self->response_version || $self->version ),
