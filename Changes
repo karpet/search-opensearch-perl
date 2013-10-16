@@ -2,6 +2,7 @@ Revision history for Search-OpenSearch
 
 0.30 xxx
  - coerce facet query input to UTF8
+ - fix double-encoding bug in json_query attribute of JSON response
 
 0.29 16 Oct 2013
  - coerce all query input to UTF8
