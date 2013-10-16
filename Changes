@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.29 xxx
+ - coerce all query input to UTF8
+
 0.28 01 Oct 2013
  - packaging clean up only
 

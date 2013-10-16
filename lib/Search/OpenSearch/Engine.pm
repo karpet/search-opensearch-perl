@@ -10,6 +10,7 @@ use Search::OpenSearch::Response::JSON;
 use Search::OpenSearch::Response::ExtJS;
 use Search::OpenSearch::Response::Tiny;
 use Search::Tools::XML;
+use Search::Tools::UTF8;
 use Search::Tools;
 use CHI;
 use Time::HiRes qw( time );
@@ -40,7 +41,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.28';
+our $VERSION = '0.29';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -146,7 +147,7 @@ sub search {
 
     my $searcher = $self->searcher or croak "searcher not defined";
     my $results = $searcher->search(
-        $query,
+        to_utf8($query),
         {   start          => $offset,
             max            => $page_size,
             order          => $sort_by,
