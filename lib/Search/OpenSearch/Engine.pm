@@ -41,7 +41,7 @@ __PACKAGE__->mk_accessors(
         )
 );
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 use Rose::Object::MakeMethods::Generic (
     'scalar --get_set_init' => 'searcher',
@@ -200,7 +200,8 @@ sub search {
         );
     }
     if ( $include_facets && !$count_only ) {
-        $response->facets( $self->get_facets( $query, $results, \%args ) );
+        $response->facets(
+            $self->get_facets( to_utf8($query), $results, \%args ) );
     }
     my $build_time = sprintf( "%0.5f", time() - $start_build );
     $response->build_time($build_time);
