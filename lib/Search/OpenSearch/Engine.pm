@@ -165,7 +165,7 @@ sub search {
     my $response = $response_class->new(
         debug        => $self->debug,
         total        => $results->hits,
-        json_query   => encode_json($query_tree),
+        json_query   => to_json($query_tree),
         parsed_query => $res_query->stringify,
         query        => to_utf8($query),
         search_time  => $search_time,
