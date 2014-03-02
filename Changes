@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.31 xxx
+ - check for !defined $query rather than !$query
+
 0.30 16 Oct 2013
  - coerce facet query input to UTF8
  - fix double-encoding bug in json_query attribute of JSON response
