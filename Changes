@@ -1,6 +1,6 @@
 Revision history for Search-OpenSearch
 
-0.31 xxx
+0.31 02 March 2014
  - check for !defined $query rather than !$query
 
 0.30 16 Oct 2013
