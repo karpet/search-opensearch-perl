@@ -98,7 +98,7 @@ sub search {
     my $self  = shift;
     my %args  = @_;
     my $query = $args{'q'};
-    if ( !defined $query ) { croak "query required"; }
+    confess "query required" unless defined $query;
     my $start_time   = time();
     my $offset       = $args{'o'} || 0;
     my $sort_by      = $args{'s'} || 'score DESC';
@@ -144,10 +144,9 @@ sub search {
         );
         push @limits, $range;
     }
-
     my $searcher = $self->searcher or croak "searcher not defined";
     my $results = $searcher->search(
-        to_utf8($query),
+        to_utf8("$query"),
         {   start          => $offset,
             max            => $page_size,
             order          => $sort_by,
@@ -255,7 +254,8 @@ sub build_results {
     my $fields    = $args{fields} || $self->fields || [];
     my $results   = $args{results} or croak "no results defined";
     my $page_size = $args{page_size} || 25;
-    my $q         = $args{query} or croak "query required";
+    my $q         = $args{query};
+    confess "query required" unless defined $q;
     my @results;
     my $count          = 0;
     my %snipper_config = %{ $self->{snipper_config} };
