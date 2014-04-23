@@ -12,6 +12,7 @@ lib/Search/OpenSearch/Response/ExtJS.pm
 lib/Search/OpenSearch/Response/JSON.pm
 lib/Search/OpenSearch/Response/Tiny.pm
 lib/Search/OpenSearch/Response/XML.pm
+lib/Search/OpenSearch/Types.pm
 Makefile.PL
 MANIFEST
 META.yml
