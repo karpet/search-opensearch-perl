@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.399_04 xxx
+ - fix bug in Response->facets type declaration (HashRef not ArrayRef)
+
 0.399_03 23 April 2014
  - add missing indexer() attribute
  - add missing init_link method

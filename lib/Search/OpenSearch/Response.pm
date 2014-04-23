@@ -17,7 +17,7 @@ has 'total'     => ( is => 'rw', isa => Int );
 has 'offset'    => ( is => 'rw', isa => Maybe [Int], default => sub {0} );
 has 'page_size' => ( is => 'rw', isa => Maybe [Int], default => sub {10} );
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef] );
-has 'facets' => ( is => 'rw', isa => Maybe [ArrayRef] );
+has 'facets' => ( is => 'rw', isa => Maybe [HashRef] );
 has 'query'  => (
     is  => 'rw',
     isa => Maybe [ Str | InstanceOf ['Search::Query::Dialect'] ]
@@ -43,7 +43,7 @@ has 'error' => ( is => 'rw', isa => Maybe [Str] );
 has 'attr_blacklist' =>
     ( is => 'rw', isa => HashRef, builder => 'init_attr_blacklist' );
 
-our $VERSION = '0.399_03';
+our $VERSION = '0.399_04';
 
 sub init_attr_blacklist {
     return { error => 1, debug => 1, attr_blacklist => 1, pps => 1, };
