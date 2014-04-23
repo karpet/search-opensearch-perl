@@ -1,6 +1,7 @@
 package Search::OpenSearch::Engine;
 use Moose;
-use Types::Standard qw( Str Num Int ArrayRef InstanceOf Maybe Object Bool );
+use Types::Standard
+    qw( Str Num Int ArrayRef HashRef InstanceOf Maybe Object Bool );
 use Carp;
 use Scalar::Util qw( blessed );
 use Search::OpenSearch::Types;
@@ -19,11 +20,12 @@ use JSON;
 
 use namespace::sweep;
 
+my $facets_type = Search::OpenSearch::Types->facets;
 has 'index' => ( is => 'rw', isa => Maybe [ArrayRef], );
 has 'facets' => (
     is     => 'rw',
-    isa    => Maybe [ InstanceOf ['Search::OpenSearch::Facets'] ],
-    coerce => Search::OpenSearch::Types->facets->coercion,
+    isa    => Maybe [$facets_type],
+    coerce => $facets_type->coercion,
 );
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef], );
 has 'link' => ( is => 'rw', isa => Str, builder => 'init_string' );
@@ -664,6 +666,34 @@ This supports the multi-value \003 separator used by L<SWISH::3>.
 =head2 response_version
 
 The version string to include in Response. Defaults to version().
+
+=head2 init_cache
+
+Builder method for B<cache>.
+
+=head2 init_hiliter_config
+
+Builder method for B<hiliter_config>.
+
+=head2 init_indexer_config
+
+Builder method for B<indexer_config>.
+
+=head2 init_parser_config
+
+Builder method for B<parser_config>.
+
+=head2 init_searcher_config
+
+Builder method for B<searcher_config>.
+
+=head2 init_snipper_config
+
+Builder method for B<snipper_config>.
+
+=head2 init_suggester_config
+
+Builder method for B<suggester_config>.
 
 =head1 AUTHOR
 

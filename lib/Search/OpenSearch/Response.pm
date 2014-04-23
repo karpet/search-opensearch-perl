@@ -36,8 +36,14 @@ has 'debug' =>
     ( is => 'rw', isa => Bool, default => sub { $ENV{SOS_DEBUG} || 0 } );
 has 'pps' => ( is => 'rw', isa => Int, default => sub {10} );
 has 'error' => ( is => 'rw', isa => Maybe [Str] );
+has 'attr_blacklist' =>
+    ( is => 'rw', isa => HashRef, builder => 'init_attr_blacklist' );
 
 our $VERSION = '0.400_01';
+
+sub init_attr_blacklist {
+    return { error => 1, debug => 1, attr_blacklist => 1, pps => 1, };
+}
 
 sub default_fields {
     return [qw( uri title summary mtime score )];
@@ -61,7 +67,8 @@ sub as_hash {
     my $self = shift;
     my %hash;
     my %class_attrs = map { $_->name => $_ } $self->meta->get_all_attributes;
-    for my $attr ( keys %attrs ) {
+    for my $attr ( keys %class_attrs ) {
+        next if exists $self->attr_blacklist->{$attr};
         $hash{$attr} = $self->$attr;
     }
     return \%hash;
@@ -133,16 +140,14 @@ common methods for all Response subclasses.
 
 =head1 METHODS
 
-This class is a subclass of Rose::ObjectX::CAF. Only new or overridden
+This class is a subclass of Moose. Only new or overridden
 methods are documented here.
 
 =head2 get_version
 
 Returns the package var $VERSION string by default.
 
-=head2 init
-
-Sets some defaults for a new Response.
+=head2 new( I<params> )
 
 The following standard get/set attribute methods are available:
 
@@ -229,6 +234,15 @@ by the default Engine class.
 Get/set error value for the Response. This value is not included
 in the stringify() output, but can be used to set or check for
 errors in processing.
+
+=head2 init_author
+
+Builder method for the B<author>.
+
+=head2 init_attr_blacklist
+
+Builder method for B<attr_blacklist>. This hashref of attribute names
+registers which attributes are excluded by stringify().
 
 =head1 AUTHOR
 
