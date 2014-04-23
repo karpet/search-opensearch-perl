@@ -1,6 +1,6 @@
 Revision history for Search-OpenSearch
 
-0.399_03 xxx
+0.399_03 23 April 2014
  - add missing indexer() attribute
  - add missing init_link method
 
