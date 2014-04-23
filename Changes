@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.399_02 23 April 2014
+ - make attributes with a 'builder' also 'lazy' to resolve load-order problems
+
 0.399_01 22 April 2014
  - port to Moose
 
