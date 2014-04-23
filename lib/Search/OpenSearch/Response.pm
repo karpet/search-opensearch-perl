@@ -1,7 +1,7 @@
 package Search::OpenSearch::Response;
-use strict;
-use warnings;
-use base qw( Rose::ObjectX::CAF );
+use Moose;
+use Types::Standard
+    qw( Int Str Num ArrayRef HashRef InstanceOf Maybe Object Bool );
 use Carp;
 use Data::Pageset;
 use overload
@@ -9,31 +9,35 @@ use overload
     'bool'   => sub {1},
     fallback => 1;
 
-my @attributes = qw(
-    engine
-    results
-    total
-    offset
-    page_size
-    fields
-    facets
-    query
-    parsed_query
-    json_query
-    title
-    link
-    author
-    search_time
-    build_time
-    sort_info
-    version
-    suggestions
-);
-__PACKAGE__->mk_accessors( @attributes, qw( debug pps error ) );
+use namespace::sweep;
 
-our $VERSION = '0.31';
+has 'engine'    => ( is => 'rw', isa => Str );
+has 'results'   => ( is => 'rw', isa => ArrayRef );
+has 'total'     => ( is => 'rw', isa => Int );
+has 'offset'    => ( is => 'rw', isa => Int, default => sub {0} );
+has 'page_size' => ( is => 'rw', isa => Int, default => sub {10} );
+has 'fields'    => ( is => 'rw', isa => ArrayRef );
+has 'facets'    => ( is => 'rw', isa => ArrayRef );
+has 'query' =>
+    ( is => 'rw', isa => Str | InstanceOf ['Search::Query::Dialect'] );
+has 'parsed_query' =>
+    ( is => 'rw', isa => Str | InstanceOf ['Search::Query::Dialect'] );
+has 'json_query' => ( is => 'rw', isa => Str );
+has 'title' =>
+    ( is => 'rw', isa => Str, default => sub {'OpenSearch Results'} );
+has 'link' => ( is => 'rw', isa => Str, default => sub {''} );
+has 'author' => ( is => 'rw', isa => Str, builder => 'init_author' );
+has 'search_time' => ( is => 'rw', isa => Num );
+has 'build_time'  => ( is => 'rw', isa => Num );
+has 'sort_info'   => ( is => 'rw', isa => Str );
+has 'version'     => ( is => 'rw', isa => Str, builder => 'get_version' );
+has 'suggestions' => ( is => 'rw', isa => ArrayRef );
+has 'debug' =>
+    ( is => 'rw', isa => Bool, default => sub { $ENV{SOS_DEBUG} || 0 } );
+has 'pps' => ( is => 'rw', isa => Int, default => sub {10} );
+has 'error' => ( is => 'rw', isa => Maybe [Str] );
 
-our %ATTRIBUTES = ();
+our $VERSION = '0.400_01';
 
 sub default_fields {
     return [qw( uri title summary mtime score )];
@@ -46,28 +50,20 @@ sub get_version {
     return ${"${class}::VERSION"};
 }
 
-sub init {
+sub init_author {
     my $self = shift;
-
-    my $class = ref $self;
-    map { $ATTRIBUTES{$class}->{$_} = $_ } @attributes;
-
-    $self->SUPER::init(@_);
-    $self->{title}     ||= 'OpenSearch Results';
-    $self->{author}    ||= ref($self);
-    $self->{link}      ||= '';
-    $self->{pps}       ||= 10;
-    $self->{offset}    ||= 0;
-    $self->{page_size} ||= 10;
-    $self->{version}   ||= $self->get_version();
-    return $self;
+    return ref($self);
 }
 
 sub stringify { croak "$_[0] does not implement stringify()" }
 
 sub as_hash {
     my $self = shift;
-    my %hash = map { $_ => $self->$_ } keys %{ $ATTRIBUTES{ ref $self } };
+    my %hash;
+    my %class_attrs = map { $_->name => $_ } $self->meta->get_all_attributes;
+    for my $attr ( keys %attrs ) {
+        $hash{$attr} = $self->$attr;
+    }
     return \%hash;
 }
 
@@ -91,8 +87,7 @@ sub add_attribute {
     my $self = shift;
     my $class = ref $self ? ref $self : $self;
     for my $attr (@_) {
-        $self->mk_accessors($attr);
-        $ATTRIBUTES{$class}->{$attr} = $attr;
+        has $attr => ( is => 'rw', isa => Maybe [Str] );
     }
 }
 

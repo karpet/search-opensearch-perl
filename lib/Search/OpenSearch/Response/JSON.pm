@@ -1,11 +1,10 @@
 package Search::OpenSearch::Response::JSON;
-use strict;
-use warnings;
+use Moose;
 use Carp;
-use base qw( Search::OpenSearch::Response );
+extends 'Search::OpenSearch::Response';
 use JSON;
 
-our $VERSION = '0.31';
+our $VERSION = '0.400_01';
 
 sub stringify {
     my $self = shift;

@@ -1,9 +1,9 @@
 package Search::OpenSearch::Engine;
-use strict;
-use warnings;
+use Moose;
+use Types::Standard qw( Str Num Int ArrayRef InstanceOf Maybe Object Bool );
 use Carp;
-use base qw( Rose::ObjectX::CAF );
 use Scalar::Util qw( blessed );
+use Search::OpenSearch::Types;
 use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
@@ -17,38 +17,53 @@ use Time::HiRes qw( time );
 use Data::Dump qw( dump );
 use JSON;
 
-__PACKAGE__->mk_accessors(
-    qw(
-        index
-        facets
-        fields
-        link
-        cache
-        cache_ttl
-        cache_ok
-        do_not_hilite
-        snipper_config
-        hiliter_config
-        parser_config
-        indexer_config
-        searcher_config
-        suggester_config
-        logger
-        debug
-        error
-        array_field_values
-        response_version
-        )
-);
+use namespace::sweep;
 
-our $VERSION = '0.31';
-
-use Rose::Object::MakeMethods::Generic (
-    'scalar --get_set_init' => 'searcher',
-    'scalar --get_set_init' => 'suggester',
-    'scalar --get_set_init' => 'cache_key_seed',
-    'scalar --get_set_init' => 'default_response_format',
+has 'index' => ( is => 'rw', isa => Maybe [ArrayRef], );
+has 'facets' => (
+    is     => 'rw',
+    isa    => Maybe [ InstanceOf ['Search::OpenSearch::Facets'] ],
+    coerce => Search::OpenSearch::Types->facets->coercion,
 );
+has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef], );
+has 'link' => ( is => 'rw', isa => Str, builder => 'init_string' );
+has 'cache' =>
+    ( is => 'rw', isa => InstanceOf ['CHI'], builder => 'init_cache' );
+has 'cache_ttl' => ( is => 'rw', isa => Int,  default => sub { 60 * 60 } );
+has 'cache_ok'  => ( is => 'rw', isa => Bool, default => sub {1} );
+has 'do_not_hilite' => ( is => 'rw', isa => HashRef, default => sub { {} } );
+has 'suggester' => ( is => 'rw', isa => Maybe [Object] );
+has 'snipper_config' =>
+    ( is => 'rw', isa => HashRef, builder => 'init_snipper_config' );
+has 'hiliter_config' =>
+    ( is => 'rw', isa => HashRef, builder => 'init_hiliter_config' );
+has 'parser_config' =>
+    ( is => 'rw', isa => HashRef, builder => 'init_parser_config' );
+has 'indexer_config' =>
+    ( is => 'rw', isa => HashRef, builder => 'init_indexer_config' );
+has 'searcher_config' =>
+    ( is => 'rw', isa => HashRef, builder => 'init_searcher_config' );
+has 'suggester_config' => (
+    is      => 'rw',
+    isa     => HashRef,
+    builder => 'init_suggester_config'
+);
+has 'logger' =>
+    ( is => 'rw', isa => Maybe [Object], builder => 'init_logger' );
+has 'debug' =>
+    ( is => 'rw', isa => Bool, default => sub { $ENV{SOS_DEBUG} || 0 } );
+has 'error' => ( is => 'rw', isa => Maybe [Str], );
+has 'array_field_values' => ( is => 'rw', isa => Bool, default => sub {1} );
+has 'response_version' => ( is => 'rw', isa => Str, builder => 'version' );
+has 'default_response_format' => (
+    is      => 'rw',
+    isa     => Maybe [Str],
+    builder => 'init_default_response_format',
+);
+has 'cache_key_seed' =>
+    ( is => 'rw', isa => Maybe [Str], builder => 'init_cache_key_seed' );
+
+our $VERSION = '0.400_01';
 
 sub version {
     my $self = shift;
@@ -57,39 +72,47 @@ sub version {
     return ${"${class}::VERSION"};
 }
 
-sub init {
+sub init_cache {
     my $self = shift;
-    $self->SUPER::init(@_);
-    if ( $self->facets and !blessed( $self->facets ) ) {
-        $self->facets(
-            Search::OpenSearch::Facets->new( %{ $self->facets } ) );
-    }
-    $self->{cache_ok} = 1 unless defined $self->{cache_ok};
-    if ( $self->{cache_ok} ) {
-        $self->{cache} ||= CHI->new(
-            driver           => 'File',
-            dir_create_mode  => 0770,
-            file_create_mode => 0660,
-            root_dir         => "/tmp/opensearch_cache",
-        );
-    }
-    $self->{cache_ttl}     ||= 60 * 60 * 1;    # 1 hour
-    $self->{do_not_hilite} ||= {};
-    $self->{snipper_config} ||= { as_sentences => 1, strip_markup => 1 };
-    $self->{hiliter_config} ||= { class => 'h', tag => 'b' };
-    $self->{parser_config}  ||= {};
-    $self->{indexer_config} ||= {};
-    $self->{searcher_config}  ||= {};
-    $self->{suggester_config} ||= {};
-
-    return $self;
+    return unless $self->cache_ok;
+    return CHI->new(
+        driver           => 'File',
+        dir_create_mode  => 0770,
+        file_create_mode => 0660,
+        root_dir         => "/tmp/opensearch_cache",
+    );
 }
-sub init_searcher { croak "$_[0] does not implement init_searcher()" }
-sub type          { croak "$_[0] does not implement type()" }
+
+sub init_snipper_config {
+    return { as_sentences => 1, strip_markup => 1 };
+}
+
+sub init_hiliter_config {
+    return { class => 'h', tag => 'b' };
+}
+
+sub init_parser_config {
+    return {};
+}
+
+sub init_indexer_config {
+    return {};
+}
+
+sub init_searcher_config {
+    return {};
+}
+
+sub init_suggester_config {
+    return {};
+}
+
+sub init_searcher { confess "$_[0] does not implement init_searcher()" }
+sub type          { confess "$_[0] does not implement type()" }
 sub has_rest_api  {0}
 
 sub get_allowed_http_methods {
-    croak "$_[0] does not implement get_allowed_http_methods";
+    confess "$_[0] does not implement get_allowed_http_methods";
 }
 sub init_default_response_format {'XML'}
 sub init_cache_key_seed          {'search-opensearch-engine'}
@@ -258,9 +281,9 @@ sub build_results {
     confess "query required" unless defined $q;
     my @results;
     my $count          = 0;
-    my %snipper_config = %{ $self->{snipper_config} };
-    my %hiliter_config = %{ $self->{hiliter_config} };
-    my %parser_config  = %{ $self->{parser_config} };
+    my %snipper_config = %{ $self->snipper_config };
+    my %hiliter_config = %{ $self->hiliter_config };
+    my %parser_config  = %{ $self->parser_config };
     my $XMLer          = Search::Tools::XML->new;
     my $query          = Search::Tools->parser(%parser_config)->parse($q);
     my $snipper = Search::Tools->snipper( query => $query, %snipper_config );
@@ -300,20 +323,10 @@ sub process_result {
     # the default behaviour is just to ignore it
     # and replace with a single space, but a subclass (like JSON)
     # might want to split on it to get an array of values
-    $title   =~ s/\003/ /g;
+    $title =~ s/\003/ /g;
     $summary =~ s/\003/ /g;
 
-    my %res = (
-        score   => $result->score,
-        uri     => $result->uri,
-        mtime   => $result->mtime,
-        title   => ( $apply_hilite ? $hiliter->light($title) : $title ),
-        summary => (
-              $apply_hilite
-            ? $hiliter->light( $XMLer->escape( $snipper->snip($summary) ) )
-            : $XMLer->escape($summary)
-        ),
-    );
+    my %res = ( score => $result->score, );
     for my $field (@$fields) {
         my $str = $result->get_property($field) || '';
 
@@ -343,6 +356,17 @@ sub process_result {
             }
         }
     }
+
+    # set the reserved fields *after* we loop fields,
+    # so that the reserved fields are always strings.
+    $res{uri}     = $result->uri;
+    $res{mtime}   = $result->mtime;
+    $res{title}   = ( $apply_hilite ? $hiliter->light($title) : $title );
+    $res{summary} = (
+          $apply_hilite
+        ? $hiliter->light( $XMLer->escape( $snipper->snip($summary) ) )
+        : $XMLer->escape($summary)
+    );
     return \%res;
 }
 

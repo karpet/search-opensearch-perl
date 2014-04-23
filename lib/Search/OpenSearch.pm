@@ -3,8 +3,9 @@ package Search::OpenSearch;
 use warnings;
 use strict;
 use Carp;
+use Class::Load;
 
-our $VERSION = '0.31';
+our $VERSION = '0.400_01';
 
 sub engine {
     my $class = shift;
@@ -14,10 +15,7 @@ sub engine {
         = $type =~ s/^\+//
         ? $type
         : 'Search::OpenSearch::Engine::' . $type;
-    eval "use $engine_class";
-    if ($@) {
-        croak $@;
-    }
+    Class::Load::load_class($engine_class);
     return $engine_class->new(%args);
 }
 
@@ -33,7 +31,7 @@ Search::OpenSearch - provide search results in OpenSearch format
 
  use Search::OpenSearch;
  my $engine = Search::OpenSearch->engine(
-    type    => 'KSx',
+    type    => 'Lucy',
     index   => [qw( path/to/index1 path/to/index2 )],
     facets  => {
         names       => [qw( color size flavor )],
@@ -67,7 +65,7 @@ to return results comforming to the OpenSearch API (http://opensearch.org/).
 
 =head2 engine( I<args> )
 
-Returns a new Search::OpenSearch::Engine instance.
+Returns a new L<Search::OpenSearch::Engine> instance.
 
 =head1 AUTHOR
 

@@ -1,12 +1,12 @@
 package Search::OpenSearch::Facets;
-use strict;
-use warnings;
+use Moo;
+use Types::Standard qw( ArrayRef Int );
 use Carp;
-use base qw( Rose::ObjectX::CAF );
 
-__PACKAGE__->mk_accessors(qw( names sample_size ));
+has 'names' => ( is => 'rw', isa => ArrayRef );
+has 'sample_size' => ( is => 'rw', isa => Int, default => sub {0} );
 
-our $VERSION = '0.31';
+our $VERSION = '0.400_01';
 
 1;
 

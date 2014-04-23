@@ -1,8 +1,7 @@
 package Search::OpenSearch::Response::XML;
-use strict;
-use warnings;
+use Moose;
 use Carp;
-use base qw( Search::OpenSearch::Response );
+extends 'Search::OpenSearch::Response';
 use Data::Dump qw( dump );
 use Search::Tools::XML;
 use Encode;
@@ -10,7 +9,7 @@ use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
 
-our $VERSION = '0.31';
+our $VERSION = '0.400_01';
 
 my $XMLer = Search::Tools::XML->new;
 

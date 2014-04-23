@@ -1,15 +1,15 @@
 package Search::OpenSearch::Response::ExtJS;
-use strict;
-use warnings;
+use Moose;
 use Carp;
-use base qw( Search::OpenSearch::Response::JSON );
+extends 'Search::OpenSearch::Response::JSON';
+use Types::Standard qw( HashRef Bool );
 use JSON;
 use Sort::SQL;
 
-our $VERSION = '0.31';
+our $VERSION = '0.400_01';
 
-__PACKAGE__->add_attribute('metaData');
-__PACKAGE__->add_attribute('success');
+has 'metaData' => ( is => 'rw', isa => HashRef );
+has 'success'  => ( is => 'rw', isa => Bool );
 
 sub stringify {
     my $self = shift;
