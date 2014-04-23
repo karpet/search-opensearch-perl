@@ -11,22 +11,26 @@ use overload
 
 use namespace::sweep;
 
-has 'engine'    => ( is => 'rw', isa => Str );
+has 'engine' => ( is => 'rw', isa => Maybe [Str] );
 has 'results'   => ( is => 'rw', isa => ArrayRef );
 has 'total'     => ( is => 'rw', isa => Int );
-has 'offset'    => ( is => 'rw', isa => Int, default => sub {0} );
-has 'page_size' => ( is => 'rw', isa => Int, default => sub {10} );
-has 'fields'    => ( is => 'rw', isa => ArrayRef );
-has 'facets'    => ( is => 'rw', isa => ArrayRef );
-has 'query' =>
-    ( is => 'rw', isa => Str | InstanceOf ['Search::Query::Dialect'] );
-has 'parsed_query' =>
-    ( is => 'rw', isa => Str | InstanceOf ['Search::Query::Dialect'] );
+has 'offset'    => ( is => 'rw', isa => Maybe [Int], default => sub {0} );
+has 'page_size' => ( is => 'rw', isa => Maybe [Int], default => sub {10} );
+has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef] );
+has 'facets' => ( is => 'rw', isa => Maybe [ArrayRef] );
+has 'query'  => (
+    is  => 'rw',
+    isa => Maybe [ Str | InstanceOf ['Search::Query::Dialect'] ]
+);
+has 'parsed_query' => (
+    is  => 'rw',
+    isa => Maybe [ Str | InstanceOf ['Search::Query::Dialect'] ]
+);
 has 'json_query' => ( is => 'rw', isa => Str );
 has 'title' =>
-    ( is => 'rw', isa => Str, default => sub {'OpenSearch Results'} );
-has 'link' => ( is => 'rw', isa => Str, default => sub {''} );
-has 'author' => ( is => 'rw', isa => Str, builder => 'init_author' );
+    ( is => 'rw', isa => Maybe [Str], default => sub {'OpenSearch Results'} );
+has 'link' => ( is => 'rw', isa => Maybe [Str], default => sub {''} );
+has 'author' => ( is => 'rw', isa => Maybe [Str], builder => 'init_author' );
 has 'search_time' => ( is => 'rw', isa => Num );
 has 'build_time'  => ( is => 'rw', isa => Num );
 has 'sort_info'   => ( is => 'rw', isa => Str );
@@ -34,12 +38,12 @@ has 'version'     => ( is => 'rw', isa => Str, builder => 'get_version' );
 has 'suggestions' => ( is => 'rw', isa => ArrayRef );
 has 'debug' =>
     ( is => 'rw', isa => Bool, default => sub { $ENV{SOS_DEBUG} || 0 } );
-has 'pps' => ( is => 'rw', isa => Int, default => sub {10} );
+has 'pps' => ( is => 'rw', isa => Maybe [Int], default => sub {10} );
 has 'error' => ( is => 'rw', isa => Maybe [Str] );
 has 'attr_blacklist' =>
     ( is => 'rw', isa => HashRef, builder => 'init_attr_blacklist' );
 
-our $VERSION = '0.399_01';
+our $VERSION = '0.399_02';
 
 sub init_attr_blacklist {
     return { error => 1, debug => 1, attr_blacklist => 1, pps => 1, };

@@ -21,7 +21,7 @@ use JSON;
 use namespace::sweep;
 
 my $facets_type = Search::OpenSearch::Types->facets;
-has 'index' => ( is => 'rw', isa => Maybe [ArrayRef], );
+has 'index' => ( is => 'rw', isa => ArrayRef, );
 has 'facets' => (
     is     => 'rw',
     isa    => Maybe [$facets_type],
@@ -29,29 +29,64 @@ has 'facets' => (
 );
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef], );
 has 'link' => ( is => 'rw', isa => Str, builder => 'init_string' );
-has 'cache' =>
-    ( is => 'rw', isa => InstanceOf ['CHI'], builder => 'init_cache' );
+has 'cache' => ( is => 'rw', isa => Maybe [Object], builder => 'init_cache' );
 has 'cache_ttl' => ( is => 'rw', isa => Int,  default => sub { 60 * 60 } );
 has 'cache_ok'  => ( is => 'rw', isa => Bool, default => sub {1} );
-has 'do_not_hilite' => ( is => 'rw', isa => HashRef, default => sub { {} } );
-has 'suggester' => ( is => 'rw', isa => Maybe [Object] );
-has 'snipper_config' =>
-    ( is => 'rw', isa => HashRef, builder => 'init_snipper_config' );
-has 'hiliter_config' =>
-    ( is => 'rw', isa => HashRef, builder => 'init_hiliter_config' );
-has 'parser_config' =>
-    ( is => 'rw', isa => HashRef, builder => 'init_parser_config' );
-has 'indexer_config' =>
-    ( is => 'rw', isa => HashRef, builder => 'init_indexer_config' );
-has 'searcher_config' =>
-    ( is => 'rw', isa => HashRef, builder => 'init_searcher_config' );
+has 'do_not_hilite' =>
+    ( is => 'rw', isa => HashRef, lazy => 1, default => sub { {} } );
+has 'searcher' => (
+    is      => 'rw',
+    isa     => Maybe [Object],
+    lazy    => 1,
+    builder => 'init_searcher'
+);
+has 'suggester' => (
+    is      => 'rw',
+    isa     => Maybe [Object],
+    lazy    => 1,
+    builder => 'init_suggester',
+);
+has 'snipper_config' => (
+    is      => 'rw',
+    isa     => HashRef,
+    lazy    => 1,
+    builder => 'init_snipper_config'
+);
+has 'hiliter_config' => (
+    is      => 'rw',
+    isa     => HashRef,
+    lazy    => 1,
+    builder => 'init_hiliter_config'
+);
+has 'parser_config' => (
+    is      => 'rw',
+    isa     => HashRef,
+    lazy    => 1,
+    builder => 'init_parser_config'
+);
+has 'indexer_config' => (
+    is      => 'rw',
+    isa     => HashRef,
+    lazy    => 1,
+    builder => 'init_indexer_config'
+);
+has 'searcher_config' => (
+    is      => 'rw',
+    isa     => HashRef,
+    lazy    => 1,
+    builder => 'init_searcher_config'
+);
 has 'suggester_config' => (
     is      => 'rw',
     isa     => HashRef,
     builder => 'init_suggester_config'
 );
-has 'logger' =>
-    ( is => 'rw', isa => Maybe [Object], builder => 'init_logger' );
+has 'logger' => (
+    is      => 'rw',
+    isa     => Maybe [Object],
+    lazy    => 1,
+    builder => 'init_logger'
+);
 has 'debug' =>
     ( is => 'rw', isa => Bool, default => sub { $ENV{SOS_DEBUG} || 0 } );
 has 'error' => ( is => 'rw', isa => Maybe [Str], );
@@ -65,7 +100,12 @@ has 'default_response_format' => (
 has 'cache_key_seed' =>
     ( is => 'rw', isa => Maybe [Str], builder => 'init_cache_key_seed' );
 
-our $VERSION = '0.399_01';
+our $VERSION = '0.399_02';
+
+sub BUILD {
+    my $self = shift;
+    return $self;
+}
 
 sub version {
     my $self = shift;
