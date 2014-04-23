@@ -40,6 +40,12 @@ has 'searcher' => (
     lazy    => 1,
     builder => 'init_searcher'
 );
+has 'indexer' => (
+    is      => 'rw',
+    isa     => Maybe [Object],
+    lazy    => 1,
+    builder => 'init_indexer'
+);
 has 'suggester' => (
     is      => 'rw',
     isa     => Maybe [Object],
@@ -150,6 +156,7 @@ sub init_suggester_config {
 }
 
 sub init_searcher { confess "$_[0] does not implement init_searcher()" }
+sub init_indexer  { confess "$_[0] does not implement init_indexer()" }
 sub type          { confess "$_[0] does not implement type()" }
 sub has_rest_api  {0}
 
