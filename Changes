@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.399_01 xxx
+ - port to Moose
+
 0.31 02 March 2014
  - check for !defined $query rather than !$query
 
