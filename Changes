@@ -2,6 +2,7 @@ Revision history for Search-OpenSearch
 
 0.399_03 xxx
  - add missing indexer() attribute
+ - add missing init_link method
 
 0.399_02 23 April 2014
  - make attributes with a 'builder' also 'lazy' to resolve load-order problems
