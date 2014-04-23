@@ -28,7 +28,7 @@ has 'facets' => (
     coerce => $facets_type->coercion,
 );
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef], );
-has 'link' => ( is => 'rw', isa => Str, builder => 'init_string' );
+has 'link' => ( is => 'rw', isa => Str, builder => 'init_link' );
 has 'cache' => ( is => 'rw', isa => Maybe [Object], builder => 'init_cache' );
 has 'cache_ttl' => ( is => 'rw', isa => Int,  default => sub { 60 * 60 } );
 has 'cache_ok'  => ( is => 'rw', isa => Bool, default => sub {1} );
@@ -155,6 +155,7 @@ sub init_suggester_config {
     return {};
 }
 
+sub init_link     {''}
 sub init_searcher { confess "$_[0] does not implement init_searcher()" }
 sub init_indexer  { confess "$_[0] does not implement init_indexer()" }
 sub type          { confess "$_[0] does not implement type()" }
