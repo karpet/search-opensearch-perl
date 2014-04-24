@@ -10,7 +10,7 @@ our $VERSION = '0.399_04';
 sub engine {
     my $class = shift;
     my %args  = @_;
-    my $type  = delete $args{type} or croak "type required";
+    my $type  = delete $args{type} or confess "type required";
     my $engine_class
         = $type =~ s/^\+//
         ? $type
