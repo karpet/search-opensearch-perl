@@ -43,7 +43,7 @@ has 'error' => ( is => 'rw', isa => Maybe [Str] );
 has 'attr_blacklist' =>
     ( is => 'rw', isa => HashRef, builder => 'init_attr_blacklist' );
 
-our $VERSION = '0.399_04';
+our $VERSION = '0.399_05';
 
 sub init_attr_blacklist {
     return { error => 1, debug => 1, attr_blacklist => 1, pps => 1, };

@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.399_05 xxx
+ - refactor Types library to follow Type::Tiny::Manual::Libraries style
+
 0.399_04 23 April 2014
  - fix bug in Response->facets type declaration (HashRef not ArrayRef)
 
