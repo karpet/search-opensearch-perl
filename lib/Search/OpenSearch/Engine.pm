@@ -20,12 +20,11 @@ use JSON;
 
 use namespace::sweep;
 
-my $facets_type = Search::OpenSearch::Types->facets;
 has 'index' => ( is => 'rw', isa => ArrayRef, );
 has 'facets' => (
     is     => 'rw',
-    isa    => Maybe [$facets_type],
-    coerce => $facets_type->coercion,
+    isa    => Maybe [SOSFacets],
+    coerce => 1,
 );
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef], );
 has 'link' => ( is => 'rw', isa => Str, builder => 'init_link' );
