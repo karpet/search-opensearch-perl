@@ -1,5 +1,6 @@
 package Search::OpenSearch::Facets;
-use Moo;
+use Moose;
+use MooseX::StrictConstructor;
 use Types::Standard qw( ArrayRef Int );
 use Carp;
 

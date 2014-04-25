@@ -16,7 +16,8 @@ Search::OpenSearch::Types - attribute types for Search::OpenSearch
 
  package Foo;
  use Moose;
- use Search::OpenSearch::Types;
+ use Search::OpenSearch::Types qw( SOSFacets );
+ use Search::OpenSearch::Facets;
 
  has 'facets' => (
     is     => 'rw',
@@ -28,9 +29,7 @@ Search::OpenSearch::Types - attribute types for Search::OpenSearch
 
 =head1 METHODS
 
-=head2 facets
-
-Returns Type::Tiny object for B<facets> type.
+None.
 
 =head1 AUTHOR
 

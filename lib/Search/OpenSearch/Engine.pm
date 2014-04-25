@@ -4,7 +4,7 @@ use Types::Standard
     qw( Str Num Int ArrayRef HashRef InstanceOf Maybe Object Bool );
 use Carp;
 use Scalar::Util qw( blessed );
-use Search::OpenSearch::Types;
+use Search::OpenSearch::Types qw( SOSFacets );
 use Search::OpenSearch::Facets;
 use Search::OpenSearch::Response::XML;
 use Search::OpenSearch::Response::JSON;
