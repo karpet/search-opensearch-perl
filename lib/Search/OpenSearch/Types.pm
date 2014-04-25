@@ -21,7 +21,7 @@ Search::OpenSearch::Types - attribute types for Search::OpenSearch
 
  has 'facets' => (
     is     => 'rw',
-    isa    => Maybe [ SOSFacets ],
+    isa    => SOSFacets,
     coerce => 1,
  );
 
