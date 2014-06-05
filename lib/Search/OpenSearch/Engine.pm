@@ -496,14 +496,23 @@ methods are documented here.
 
 Returns the $VERSION for the Engine.
 
-=head2 init
+=head2 BUILD
 
 Sets up the new object.
+
+=head2 init_indexer
+
+Subclasses must implement this method if they wish to support
+REST methods (PUT POST DELETE).
+
+=head2 init_link
+
+Initialize the link() attribute. This is a builder method.
 
 =head2 init_searcher
 
 Subclasses must implement this method. If the Searcher object
-acts like a SWISH::Prog::Searcher, then search() will Just Work.
+acts like a L<SWISH::Prog::Searcher> or L<Dezi::Searcher>, then search() will Just Work.
 Otherwise, your Engine subclass should likely override search() as well.
 
 =head2 init_suggester

@@ -21,5 +21,6 @@ t/00-load.t
 t/01-client.t
 t/02-response.t
 t/03-mem-leak.t
+t/04-types.t
 t/pod-coverage.t
 t/pod.t
