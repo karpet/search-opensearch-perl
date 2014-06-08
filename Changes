@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.400 07 June 2014
+ - official Moose release
+
 0.399_05 05 June 2014
  - refactor Types library to follow Type::Tiny::Manual::Libraries style
 
