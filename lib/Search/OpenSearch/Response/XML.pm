@@ -9,7 +9,7 @@ use URI::Encode qw( uri_encode );
 use POSIX qw( strftime );
 use Data::UUID;
 
-our $VERSION = '0.400';
+our $VERSION = '0.401';
 
 my $XMLer = Search::Tools::XML->new;
 
@@ -28,7 +28,7 @@ sub stringify {
     my $UUID_maker = Data::UUID->new;
     my @entries    = $self->_build_entries;
 
-    my $now = strftime $AtomDT, gmtime;
+    my $now = strftime $AtomDT, gmtime( $self->get_mtime() );
     my $query = $self->query;
     $query = "" unless defined $query;
 

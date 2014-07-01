@@ -47,6 +47,7 @@ my $extjs_expected = {
     suggestions  => undef,
     title        => "OpenSearch Results",
     total        => undef,
+    updated      => 0,
     version      => $Search::OpenSearch::Response::ExtJS::VERSION,
 };
 
@@ -81,6 +82,7 @@ my $json_expected = {
     page_size    => 10,
     offset       => 0,
     sort_info    => undef,                                  #'score DESC',
+    updated      => 0,
     version => $Search::OpenSearch::Response::JSON::VERSION,
 };
 

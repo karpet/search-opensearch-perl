@@ -1,5 +1,9 @@
 Revision history for Search-OpenSearch
 
+0.401 xxx
+ - add Response->get_mtime() and 'updated' field in JSON responses
+   to match the existing 'updated' field in XML response.
+
 0.400 07 June 2014
  - official Moose release
 

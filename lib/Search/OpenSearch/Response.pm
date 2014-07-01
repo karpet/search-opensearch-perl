@@ -42,12 +42,22 @@ has 'pps' => ( is => 'rw', isa => Maybe [Int], default => sub {10} );
 has 'error' => ( is => 'rw', isa => Maybe [Str] );
 has 'attr_blacklist' =>
     ( is => 'rw', isa => HashRef, builder => 'init_attr_blacklist' );
+has 'mtime_field' =>
+    ( is => 'rw', isa => Str, builder => 'init_mtime_field' );
 
-our $VERSION = '0.400';
+our $VERSION = '0.401';
 
 sub init_attr_blacklist {
-    return { error => 1, debug => 1, attr_blacklist => 1, pps => 1, };
+    return {
+        error          => 1,
+        debug          => 1,
+        attr_blacklist => 1,
+        pps            => 1,
+        mtime_field    => 1,
+    };
 }
+
+sub init_mtime_field { return 'mtime' }
 
 sub default_fields {
     return [qw( uri title summary mtime score )];
@@ -75,7 +85,21 @@ sub as_hash {
         next if exists $self->attr_blacklist->{$attr};
         $hash{$attr} = $self->$attr;
     }
+    $hash{updated} = $self->get_mtime();
     return \%hash;
+}
+
+sub get_mtime {
+    my $self   = shift;
+    my $field  = $self->mtime_field;
+    my $recent = 0;
+    for my $r ( @{ $self->results || [] } ) {
+        my $mtime = $r->{$field};
+        if ( $mtime > $recent ) {
+            $recent = $mtime;
+        }
+    }
+    return $recent;
 }
 
 sub build_pager {
@@ -114,7 +138,7 @@ Search::OpenSearch::Response - provide search results in OpenSearch format
 
  use Search::OpenSearch;
  my $engine = Search::OpenSearch->engine(
-    type    => 'KSx',
+    type    => 'Lucy',
     index   => [qw( path/to/index1 path/to/index2 )],
     facets  => {
         names       => [qw( color size flavor )],
@@ -206,6 +230,11 @@ Pages-per-section. Used by Data::Pageset. Default is "10".
 
 =item suggestions
 
+=item mtime_field
+
+The results field to use for the last-modified logic in get_mtime().
+The default is C<mtime>. The field value should be an integer.
+
 =back
 
 =head2 build_pager
@@ -215,6 +244,11 @@ Returns Data::Pageset object based on offset() and page_size().
 =head2 as_hash
 
 Returns the Response object as a hash ref of key/value pairs.
+
+=head2 get_mtime
+
+Returns an integer representing the most recent mtime of the
+current set of results.
 
 =head2 stringify
 
@@ -247,6 +281,10 @@ Builder method for the B<author>.
 
 Builder method for B<attr_blacklist>. This hashref of attribute names
 registers which attributes are excluded by stringify().
+
+=head2 init_mtime_field
+
+Builder method for B<mtime_field>.
 
 =head1 AUTHOR
 
