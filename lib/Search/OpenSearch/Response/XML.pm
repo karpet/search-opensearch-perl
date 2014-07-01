@@ -26,9 +26,13 @@ sub stringify {
     my $self       = shift;
     my $pager      = $self->build_pager();
     my $UUID_maker = Data::UUID->new;
+
+    # must get results->mtime before build_entries
+    # because mtime gets deleted in build_entries.
+    my $resp_mtime = $self->get_mtime();
     my @entries    = $self->_build_entries;
 
-    my $now = strftime $AtomDT, gmtime( $self->get_mtime() );
+    my $now = strftime $AtomDT, gmtime($resp_mtime);
     my $query = $self->query;
     $query = "" unless defined $query;
 
