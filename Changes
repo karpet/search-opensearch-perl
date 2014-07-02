@@ -1,6 +1,6 @@
 Revision history for Search-OpenSearch
 
-0.401 xxx
+0.401 02 July 2014
  - add Response->get_mtime() and 'updated' field in JSON responses
    to match the existing 'updated' field in XML response.
 
