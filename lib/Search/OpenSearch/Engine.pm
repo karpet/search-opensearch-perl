@@ -105,7 +105,7 @@ has 'default_response_format' => (
 has 'cache_key_seed' =>
     ( is => 'rw', isa => Maybe [Str], builder => 'init_cache_key_seed' );
 
-our $VERSION = '0.401';
+our $VERSION = '0.402';
 
 sub BUILD {
     my $self = shift;

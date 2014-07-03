@@ -4,7 +4,7 @@ use Carp;
 extends 'Search::OpenSearch::Response::JSON';
 use JSON;
 
-our $VERSION = '0.401';
+our $VERSION = '0.402';
 
 my %tiny_fields = map { $_ => 1 } qw(
     total

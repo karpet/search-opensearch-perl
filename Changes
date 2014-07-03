@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.402 03 July 2014
+ - fix min version of Type::Tiny (https://rt.cpan.org/Public/Bug/Display.html?id=96917)
+
 0.401 02 July 2014
  - add Response->get_mtime() and 'updated' field in JSON responses
    to match the existing 'updated' field in XML response.
