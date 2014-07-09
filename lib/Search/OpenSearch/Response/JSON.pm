@@ -4,7 +4,7 @@ use Carp;
 extends 'Search::OpenSearch::Response';
 use JSON;
 
-our $VERSION = '0.403';
+our $VERSION = '0.404';
 
 sub stringify {
     my $self = shift;

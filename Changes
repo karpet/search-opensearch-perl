@@ -1,5 +1,9 @@
 Revision history for Search-OpenSearch
 
+0.404 09 July 2014
+ - set 'cache' method lazy attribute so that init_cache is deferred till after
+   init_cache_ok is called.
+
 0.403 09 July 2014
  - switch from 'default' to 'builder' attribute in method defs, as that
    is more reliable when used with Maybe [ Foo ]

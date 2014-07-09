@@ -28,7 +28,12 @@ has 'facets' => (
 );
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef], );
 has 'link' => ( is => 'rw', isa => Str, builder => 'init_link' );
-has 'cache' => ( is => 'rw', isa => Maybe [Object], builder => 'init_cache' );
+has 'cache' => (
+    is      => 'rw',
+    isa     => Maybe [Object],
+    builder => 'init_cache',
+    lazy    => 1,
+);
 has 'cache_ttl' => ( is => 'rw', isa => Int,  builder => 'init_cache_ttl' );
 has 'cache_ok'  => ( is => 'rw', isa => Bool, builder => 'init_cache_ok' );
 has 'do_not_hilite' =>
@@ -105,7 +110,7 @@ has 'default_response_format' => (
 has 'cache_key_seed' =>
     ( is => 'rw', isa => Maybe [Str], builder => 'init_cache_key_seed' );
 
-our $VERSION = '0.403';
+our $VERSION = '0.404';
 
 sub BUILD {
     my $self = shift;
