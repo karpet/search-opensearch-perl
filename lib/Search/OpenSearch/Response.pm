@@ -12,10 +12,11 @@ use overload
 use namespace::sweep;
 
 has 'engine' => ( is => 'rw', isa => Maybe [Str] );
-has 'results'   => ( is => 'rw', isa => ArrayRef );
-has 'total'     => ( is => 'rw', isa => Int );
-has 'offset'    => ( is => 'rw', isa => Maybe [Int], default => sub {0} );
-has 'page_size' => ( is => 'rw', isa => Maybe [Int], default => sub {10} );
+has 'results' => ( is => 'rw', isa => ArrayRef );
+has 'total'   => ( is => 'rw', isa => Int );
+has 'offset'  => ( is => 'rw', isa => Maybe [Int], builder => 'init_offset' );
+has 'page_size' =>
+    ( is => 'rw', isa => Maybe [Int], builder => 'init_page_size' );
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef] );
 has 'facets' => ( is => 'rw', isa => Maybe [HashRef] );
 has 'query'  => (
@@ -27,9 +28,8 @@ has 'parsed_query' => (
     isa => Maybe [ Str | InstanceOf ['Search::Query::Dialect'] ]
 );
 has 'json_query' => ( is => 'rw', isa => Str );
-has 'title' =>
-    ( is => 'rw', isa => Maybe [Str], default => sub {'OpenSearch Results'} );
-has 'link' => ( is => 'rw', isa => Maybe [Str], default => sub {''} );
+has 'title' => ( is => 'rw', isa => Maybe [Str], builder => 'init_title', );
+has 'link'   => ( is => 'rw', isa => Maybe [Str], builder => 'init_link' );
 has 'author' => ( is => 'rw', isa => Maybe [Str], builder => 'init_author' );
 has 'search_time' => ( is => 'rw', isa => Num );
 has 'build_time'  => ( is => 'rw', isa => Num );
@@ -45,7 +45,7 @@ has 'attr_blacklist' =>
 has 'mtime_field' =>
     ( is => 'rw', isa => Str, builder => 'init_mtime_field' );
 
-our $VERSION = '0.402';
+our $VERSION = '0.403';
 
 sub init_attr_blacklist {
     return {
@@ -74,6 +74,11 @@ sub init_author {
     my $self = shift;
     return ref($self);
 }
+
+sub init_title     {'OpenSearch Results'}
+sub init_link      {''}
+sub init_offset    {0}
+sub init_page_size {10}
 
 sub stringify { croak "$_[0] does not implement stringify()" }
 
@@ -276,6 +281,22 @@ errors in processing.
 =head2 init_author
 
 Builder method for the B<author>.
+
+=head2 init_title
+
+Builder method for B<title>.
+
+=head2 init_link
+
+Builder method for B<link>.
+
+=head2 init_offset
+
+Builder method for B<offset>.
+
+=head2 init_page_size
+
+Builder method for B<page_size>.
 
 =head2 init_attr_blacklist
 

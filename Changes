@@ -1,5 +1,9 @@
 Revision history for Search-OpenSearch
 
+0.403 09 July 2014
+ - switch from 'default' to 'builder' attribute in method defs, as that
+   is more reliable when used with Maybe [ Foo ]
+
 0.402 03 July 2014
  - fix min version of Type::Tiny (https://rt.cpan.org/Public/Bug/Display.html?id=96917)
 

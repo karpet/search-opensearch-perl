@@ -29,8 +29,8 @@ has 'facets' => (
 has 'fields' => ( is => 'rw', isa => Maybe [ArrayRef], );
 has 'link' => ( is => 'rw', isa => Str, builder => 'init_link' );
 has 'cache' => ( is => 'rw', isa => Maybe [Object], builder => 'init_cache' );
-has 'cache_ttl' => ( is => 'rw', isa => Int,  default => sub { 60 * 60 } );
-has 'cache_ok'  => ( is => 'rw', isa => Bool, default => sub {1} );
+has 'cache_ttl' => ( is => 'rw', isa => Int,  builder => 'init_cache_ttl' );
+has 'cache_ok'  => ( is => 'rw', isa => Bool, builder => 'init_cache_ok' );
 has 'do_not_hilite' =>
     ( is => 'rw', isa => HashRef, lazy => 1, default => sub { {} } );
 has 'searcher' => (
@@ -105,7 +105,7 @@ has 'default_response_format' => (
 has 'cache_key_seed' =>
     ( is => 'rw', isa => Maybe [Str], builder => 'init_cache_key_seed' );
 
-our $VERSION = '0.402';
+our $VERSION = '0.403';
 
 sub BUILD {
     my $self = shift;
@@ -118,6 +118,9 @@ sub version {
     no strict 'refs';
     return ${"${class}::VERSION"};
 }
+
+sub init_cache_ttl { 60 * 60 }
+sub init_cache_ok  {1}
 
 sub init_cache {
     my $self = shift;
@@ -722,6 +725,14 @@ This supports the multi-value \003 separator used by L<SWISH::3>.
 =head2 response_version
 
 The version string to include in Response. Defaults to version().
+
+=head2 init_cache_ttl
+
+Builder method for B<cache_ttl>.
+
+=head2 init_cache_ok
+
+Builder method for B<cache_ok>.
 
 =head2 init_cache
 
