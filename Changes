@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.405 xxx
+ - doc tweeks to remove references to Rose::ObjectX::CAF and SWISH::Prog.
+
 0.404 09 July 2014
  - set 'cache' method lazy attribute so that init_cache is deferred till after
    init_cache_ok is called.

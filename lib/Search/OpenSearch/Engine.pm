@@ -110,7 +110,7 @@ has 'default_response_format' => (
 has 'cache_key_seed' =>
     ( is => 'rw', isa => Maybe [Str], builder => 'init_cache_key_seed' );
 
-our $VERSION = '0.404';
+our $VERSION = '0.405';
 
 sub BUILD {
     my $self = shift;
@@ -493,11 +493,11 @@ Search::OpenSearch::Engine - abstract base class
 =head1 DESCRIPTION
 
 Search::OpenSearch::Engine is an abstract base class. It defines
-some sane method behavior based on the SWISH::Prog::Searcher API.
+some sane method behavior based on the L<Dezi::Searcher> API.
 
 =head1 METHODS
 
-This class is a subclass of Rose::ObjectX::CAF. Only new or overridden
+This class is a subclass of L<Moose>. Only new or overridden
 methods are documented here.
 
 =head2 version
@@ -592,7 +592,7 @@ to provide Facet support.
 
 =head2 build_results( I<results> )
 
-I<results> should be an iterator like SWISH::Prog::Results.
+I<results> should be an iterator like L<Dezi::Results>.
 
 Returns an array ref of hash refs, each corresponding to a single
 search result.
