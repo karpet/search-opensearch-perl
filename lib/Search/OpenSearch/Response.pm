@@ -45,7 +45,7 @@ has 'attr_blacklist' =>
 has 'mtime_field' =>
     ( is => 'rw', isa => Str, builder => 'init_mtime_field' );
 
-our $VERSION = '0.405';
+our $VERSION = '0.406';
 
 sub init_attr_blacklist {
     return {
@@ -127,7 +127,7 @@ sub add_attribute {
     my $self = shift;
     my $class = ref $self ? ref $self : $self;
     for my $attr (@_) {
-        has $attr => ( is => 'rw', isa => Maybe [Str] );
+        has $attr => ( is => 'rw', );
     }
 }
 

@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.406 15 Aug 2014
+ - Response->add_attribute no longer hardcodes type of Maybe[Str]
+
 0.405 24 July 2014
  - doc tweeks to remove references to Rose::ObjectX::CAF and SWISH::Prog.
 
