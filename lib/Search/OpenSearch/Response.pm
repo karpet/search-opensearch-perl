@@ -99,6 +99,7 @@ sub get_mtime {
     my $field  = $self->mtime_field;
     my $recent = 0;
     for my $r ( @{ $self->results || [] } ) {
+        next unless ref $r eq 'HASH';
         my $mtime = $r->{$field};
         if ( $mtime > $recent ) {
             $recent = $mtime;
