@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.407 19 Aug 2014
+ - fix bug in mtime response getter, for subclasses that override results()
+
 0.406 15 Aug 2014
  - Response->add_attribute no longer hardcodes type of Maybe[Str]
 
