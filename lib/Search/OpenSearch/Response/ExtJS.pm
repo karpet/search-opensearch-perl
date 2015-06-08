@@ -6,7 +6,7 @@ use Types::Standard qw( HashRef Bool );
 use JSON;
 use Sort::SQL;
 
-our $VERSION = '0.408';
+our $VERSION = '0.409';
 
 has 'metaData' => ( is => 'rw', isa => HashRef );
 has 'success'  => ( is => 'rw', isa => Bool );

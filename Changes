@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.409 08 June 2015
+ - fix Makefile.PL reqs for 0.408
+
 0.408 08 June 2015
  - swapped namespace::autoclean in, namespace::sweep out. See https://rt.cpan.org/Ticket/Display.html?id=104822
 

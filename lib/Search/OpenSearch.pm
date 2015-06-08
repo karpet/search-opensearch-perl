@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Class::Load;
 
-our $VERSION = '0.408';
+our $VERSION = '0.409';
 
 sub engine {
     my $class = shift;

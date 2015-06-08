@@ -45,7 +45,7 @@ has 'attr_blacklist' =>
 has 'mtime_field' =>
     ( is => 'rw', isa => Str, builder => 'init_mtime_field' );
 
-our $VERSION = '0.408';
+our $VERSION = '0.409';
 
 sub init_attr_blacklist {
     return {
