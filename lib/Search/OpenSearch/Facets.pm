@@ -7,7 +7,7 @@ use Carp;
 has 'names' => ( is => 'rw', isa => ArrayRef );
 has 'sample_size' => ( is => 'rw', isa => Int, default => sub {0} );
 
-our $VERSION = '0.407';
+our $VERSION = '0.408';
 
 1;
 

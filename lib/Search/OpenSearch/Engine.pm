@@ -18,7 +18,7 @@ use Time::HiRes qw( time );
 use Data::Dump qw( dump );
 use JSON;
 
-use namespace::sweep;
+use namespace::autoclean;
 
 has 'index' => ( is => 'rw', isa => ArrayRef, );
 has 'facets' => (
@@ -110,7 +110,7 @@ has 'default_response_format' => (
 has 'cache_key_seed' =>
     ( is => 'rw', isa => Maybe [Str], builder => 'init_cache_key_seed' );
 
-our $VERSION = '0.407';
+our $VERSION = '0.408';
 
 sub BUILD {
     my $self = shift;

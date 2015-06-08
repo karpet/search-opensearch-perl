@@ -9,7 +9,7 @@ use overload
     'bool'   => sub {1},
     fallback => 1;
 
-use namespace::sweep;
+use namespace::autoclean;
 
 has 'engine' => ( is => 'rw', isa => Maybe [Str] );
 has 'results' => ( is => 'rw', isa => ArrayRef );
@@ -45,7 +45,7 @@ has 'attr_blacklist' =>
 has 'mtime_field' =>
     ( is => 'rw', isa => Str, builder => 'init_mtime_field' );
 
-our $VERSION = '0.407';
+our $VERSION = '0.408';
 
 sub init_attr_blacklist {
     return {

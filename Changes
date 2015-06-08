@@ -1,5 +1,8 @@
 Revision history for Search-OpenSearch
 
+0.408 08 June 2015
+ - swapped namespace::autoclean in, namespace::sweep out. See https://rt.cpan.org/Ticket/Display.html?id=104822
+
 0.407 19 Aug 2014
  - fix bug in mtime response getter, for subclasses that override results()
 
